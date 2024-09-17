@@ -5,9 +5,12 @@ public class Scanner {
             
         String strInput = "x = x + 1;";
         char[] input = strInput.toCharArray();
+        for (int val : input) {
+            System.out.print(val + "");
+        }
         int[] acc = {};
         int[][] fsm = {
-            {},
+            /* State 0 */  {},
             {}
         };
         char c = 'x';
@@ -40,6 +43,8 @@ public class Scanner {
         private static boolean isSpace(char c) {
             return c == ' ';
         }
-    
+        
+
+
 }
 
