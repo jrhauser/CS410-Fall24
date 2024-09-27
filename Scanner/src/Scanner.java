@@ -249,12 +249,6 @@ public class Scanner {
                         if (nextState != 62) {
                                 output.add(current);
                                 state = nextState;
-                        } else if (i == inputString.length() - 1) {
-                                if (accept[state] == 1) {
-                                        output.clear();
-                                        output.add(current);
-                                        System.out.println("accepted: " + output);
-                                }
                         } else {
                                 if (accept[state] == 1) {
                                         System.out.println("accepted: " + output);
