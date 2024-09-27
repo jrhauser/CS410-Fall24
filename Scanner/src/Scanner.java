@@ -239,19 +239,39 @@ public class Scanner {
                                 1, 1, 1, 1, 1 };
 
                 int state = 0;
-                var inputString = "if ;{}";
+                var inputString = "if (xyz == 1) { x+= 1.0}";
                 char current;
                 int nextState = 0;
                 var output = new ArrayList<Character>();
                 for (int i = 0; i < inputString.length(); i++) {
                         current = inputString.charAt(i);
                         nextState = fsm[state][l.get(current)];
+                        if (i == inputString.length() - 1) {
+                                if (nextState != 62) {
+                                        output.add(current);
+                                        state = nextState;
+                                        if (accept[state] == 1) {
+                                                System.out.println("accepted: " + output);
+                                                state = 0;
+                                                output.clear();
+                                        }
+                                }
+                        }
                         if (nextState != 62) {
                                 output.add(current);
                                 state = nextState;
                         } else {
                                 if (accept[state] == 1) {
-                                        System.out.println("accepted: " + output);
+                                        if (state == 45) {
+                                                System.out.println("accepted: " + output + " identifier");
+
+                                        } else if (state == 50) {
+                                                System.out.println("accepted: " + output + " integer literal");
+                                        } else if (state == 51) {
+                                                System.out.println("accepted: " + output + " float literal");
+                                        } else {
+                                                System.out.println("accepted: " + output);
+                                        }
                                         state = 0;
                                         output.clear();
                                 }
