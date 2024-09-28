@@ -1,5 +1,5 @@
 
-// Authored by:  Joe Hauser - 
+// Authored by:  Joe Hauser - Kate Merritt - Juan Zacarias
 // Reviewed by: 
 import java.util.ArrayList;
 import java.util.HashMap;
