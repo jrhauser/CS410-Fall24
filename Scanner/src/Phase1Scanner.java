@@ -2,7 +2,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Scanner {
+public class Phase1Scanner {
         public static void main(String[] args) throws Exception {
                 var l = new HashMap<Character, Integer>();
                 char[] alpha = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
