@@ -1,6 +1,9 @@
 
+// Authored by:  Joe Hauser - 
+// Reviewed by: 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Phase1Scanner {
         public static void main(String[] args) throws Exception {
@@ -221,12 +224,12 @@ public class Phase1Scanner {
                                 /* 59 */{ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
                                                 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
                                                 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 },
-                                /* 60 */{ 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
-                                                45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 62,
+                                /* 60 */{ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
+                                                62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
                                                 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 },
-                                /* 61 */{ 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
-                                                45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 62,
-                                                62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 }
+                                /* 61 */{ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
+                                                62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62,
+                                                62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 },
                 };
                 // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
                 // 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54
@@ -234,9 +237,10 @@ public class Phase1Scanner {
                 int accept[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
                                 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1,
                                 1, 1, 1, 1, 1 };
-
+                System.out.println("Enter a C command:");
+                Scanner scan = new Scanner(System.in);
+                String inputString = scan.nextLine();
                 int state = 0;
-                var inputString = "if(xyz1==1){x++;}";
                 char current;
                 int nextState = 0;
                 var output = new ArrayList<Character>();
@@ -248,7 +252,16 @@ public class Phase1Scanner {
                                         output.add(current);
                                         state = nextState;
                                         if (accept[state] == 1) {
-                                                System.out.println("accepted: " + output);
+                                                if (state == 45) {
+                                                        System.out.println("accepted: " + output + " identifier");
+
+                                                } else if (state == 50) {
+                                                        System.out.println("accepted: " + output + " integer literal");
+                                                } else if (state == 51) {
+                                                        System.out.println("accepted: " + output + " float literal");
+                                                } else {
+                                                        System.out.println("accepted: " + output);
+                                                }
                                                 state = 0;
                                                 output.clear();
                                         }
