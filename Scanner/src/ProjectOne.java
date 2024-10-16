@@ -331,6 +331,7 @@ public class ProjectOne {
                        	}
                        }
                }
+               scan.close();
                }
 }
 
