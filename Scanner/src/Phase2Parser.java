@@ -1,50 +1,148 @@
+
+
 public class Phase2Parser {
-    
-    void Program() {
+    private static String inputString;
+    public static void main(String[] args) {
+
+    }
+    static boolean accept(String s) {
+        return s.equals(inputString);
+    }
+
+    static void reject() {
 
     }
 
-    void Statement() {
+    static boolean expect(String s) {
+        if (accept(s)) {
+            return true;
+        }   
+        throw new IllegalStateException("Expected a different token");
+    }
+
+    static void Program() {
+        if (accept("for")) {
+            expect("(");
+            Declaration();
+            Condition();
+            expect(";");
+            Expression();
+            expect(")");
+            expect("{");
+            Program();
+            expect("}");
+
+        } else if (accept("while")) {
+            expect("(");
+            Condition();
+            expect(")");
+            expect("{");
+            Program();
+            expect("}");
+        } else if (accept("if")) {
+            expect("(");
+            Condition();
+            expect(")");
+            expect("{");
+            Program();
+            expect("}");
+            Else();
+        } else {
+            Declaration();
+        }
 
     }
 
-    void Else() {
+    static void Statement() {
 
     }
-    void Declaration() {
 
+    static void Else() {
+        if (accept("else")) {
+            expect("else");
+            expect("{");
+            Program();
+            expect("}");
+        }
+        if (accept("else")) {
+            Else();
+        }
+    }
+    static void Declaration() {
+        Type();
+        Name();
+        expect("=");
+        Value();
     } 
 
-    void Assignment() {
-
+    static void Assignment() {
+        Name();
+        expect("=");
+        Value();
+        expect(";");
     }
 
-    void Type() {
+    static void Type() {
+        if (accept("int")) {
+            return;
+        } else if (accept("bool")) {
+            return;
+        }
+        expect("float");
     }
 
-    void Name() {
+    static void Name() {
 
     }
-    void Value() {
+    static void Value() {
+        Number();
+        Boolean();
+    } 
+    static void Number() {
 
     } 
-    void Number() {
+    static void Integer() {
+
+    }
+    static void Boolean() {
 
     } 
-    void Integer() {
-
+    static void Operator() {
+        if (accept("+")) {
+            return;
+        } else if (accept("-")) {
+            return;
+        } else if (accept("*")) {
+            return;
+        } else if (accept("/")) {
+            return;
+        } else if (accept("++")) {
+            return;
+        }
+        expect("--");
     }
-    void Boolean() {
-
-    } 
-    void Operator() {
-
+    static void Comparison() {
+        if (accept("==")) {
+            return;
+        } else if (accept("!=")) {
+            return;
+        } else if (accept("<")) {
+            return;
+        } else if (accept("<=")) {
+            return;
+        } else if (accept(">")) {
+            return;
+        }
+        expect(">=");
     }
-    void Comparison() {
 
+    static void Condition() {
+        Name();
+        Comparison();
+        Value();
     }
 
-    void Condition() {
-        
+    private static void Expression() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
