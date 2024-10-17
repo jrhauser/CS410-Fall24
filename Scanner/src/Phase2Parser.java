@@ -7,6 +7,9 @@ public class Phase2Parser {
     private static String currentToken;
     private static ArrayList<String> tokens = new ArrayList<>();
     public static void main(String[] args) {
+        ArrayList<String> query = new ArrayList<>();
+        query = ProjectOne.partOne();
+        System.out.println(query);
         tokens.add("int");
         tokens.add("Identifier: x");
         tokens.add("=");
