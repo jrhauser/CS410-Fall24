@@ -2,7 +2,7 @@
 //Reviewed by: Ethan Sitler
 import java.util.*;
 public class ProjectOne {
-       public static ArrayList<String> scanner(){
+       public static  ArrayList<String> partOne(){
                 ArrayList<String> query = new ArrayList<>();
                var l = new HashMap<Character, Integer>();
                char[] alpha = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
@@ -378,7 +378,7 @@ public class ProjectOne {
                }
        public static void main(String[] args){
         System.out.println("Hi");
-        scanner();
+        partOne();
        }
 }
 
