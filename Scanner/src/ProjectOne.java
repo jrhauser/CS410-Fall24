@@ -1,9 +1,9 @@
 // Authored by:  Joe Hauser - Kate Merritt - Juan Zacarias - Ahmad Mikky
 //Reviewed by: Ethan Sitler
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 public class ProjectOne {
-       public static void main(String[] args) throws Exception {
+       public static ArrayList<String> scanner(){
+                ArrayList<String> query = new ArrayList<>();
                var l = new HashMap<Character, Integer>();
                char[] alpha = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
                                'r', 's',
@@ -162,44 +162,58 @@ public class ProjectOne {
                                        state = nextState;
                                        if (accept[state] == 1&&!output.strip().equals("")) {
                                                if (state == 45) {
+                                                       query.add("Accepted: Class: Identifier Value: "+ output);
                                                        System.out.println("Accepted: Class: Identifier Value: "+ output);
                                                }
                                                else if (state == 36) {
-                                               	System.out.println("Accepted: Class: Float Type");
+                                                query.add("Accepted: Class: float");
+                                               	System.out.println("Accepted: Class: float");
                                                }
                                                else if (state == 17) {
-                                               	System.out.println("Accepted: Class: If Keyword");
+                                                query.add("Accepted: Class: if");
+                                               	System.out.println("Accepted: Class: if");
                                                }
                                                else if (state == 29) {
-                                               	System.out.println("Accepted: Class: While Keyword");
+                                                query.add("Accepted: Class: while");
+                                               	System.out.println("Accepted: Class: while");
                                                }
                                                else if (state == 32) {
-                                               	System.out.println("Accepted: Class: For Keyword");
+                                                query.add("Accepted: Class: for");
+                                               	System.out.println("Accepted: Class: for");
                                                }
                                                else if (state == 55) {
-                                               	System.out.println("Accepted: Class: Bool Literal Value: False");
+                                                query.add("Accepted: Class: Bool Literal Value: false");
+                                               	System.out.println("Accepted: Class: Bool Literal Value: false");
                                                }
                                                else if (state == 40) {
-                                               	System.out.println("Accepted: Class: Bool Type");
+                                                query.add("Accepted: Class: bool");
+                                               	System.out.println("Accepted: Class: bool");
                                                }
                                                else if (state == 44) {
-                                               	System.out.println("Accepted: Class: Else Keyword");
+                                                query.add("Accepted: Class: else");
+                                               	System.out.println("Accepted: Class: else");
                                                }
                                                else if (state == 49) {
-                                               	System.out.println("Accepted: Class: Bool Literal Value: True");
+                                                query.add("Accepted: Class: Bool Literal Value: true");
+                                               	System.out.println("Accepted: Class: Bool Literal Value: true");
                                                }
                                                else if (state == 20) {
-                                               	System.out.println("Accepted: Class: Integer Type");
+                                                query.add("Accepted: Class: int");
+                                               	System.out.println("Accepted: Class: int");
                                                }
                                                else if (state == 50) {
+                                                query.add("Accepted: Class: Integer Literal Value: "+ output);
                                                	System.out.println("Accepted: Class: Integer Literal Value: "+ output);
                                                } else if (state == 51) {
+                                                query.add("Accepted: Class: Float Literal Value: "+ output);
                                                	System.out.println("Accepted: Class: Float Literal Value: "+ output);
                                                } else {
                                                	if(k.containsKey(output)) {
-                                               		System.out.println("Accepted Class: " + k.get(output));
+                                                        query.add("Accepted Class: " + output);
+                                               		System.out.println("Accepted Class: " + output);
                                                	}
                                                	else {
+                                                        query.add("First Loop Accepted: " + output);
                                                		System.out.println("First Loop Accepted: " + output);
                                                	}
                                                }
@@ -213,48 +227,62 @@ public class ProjectOne {
                                	}
                                	else {
                                		if (accept[state] == 1&&!output.strip().equals("")) {
-                                           if (state == 45) {
-                                           	System.out.println("Accepted: Class: Identifier Value: "+ output);
-                                           } else if (state == 50) {
-                                           	System.out.println("Accepted: Class: Integer Literal Value: "+ output);
-                                           }
-                                           else if (state == 20) {
-                                           	System.out.println("Accepted: Class: Integer Type");
-                                           }
-                                           else if (state == 36) {
-                                           	System.out.println("Accepted: Class: Float Type");
-                                           }
-                                           else if (state == 17) {
-                                           	System.out.println("Accepted: Class: If Keyword");
-                                           }
-                                           else if (state == 29) {
-                                           	System.out.println("Accepted: Class: While Keyword");
-                                           }
-                                           else if (state == 32) {
-                                           	System.out.println("Accepted: Class: For Keyword");
-                                           }
-                                           else if (state == 55) {
-                                           	System.out.println("Accepted: Class: Bool Literal Value: False");
-                                           }
-                                           else if (state == 40) {
-                                           	System.out.println("Accepted: Class: Bool Type");
-                                           }
-                                           else if (state == 44) {
-                                           	System.out.println("Accepted: Class: Else Keyword");
-                                           }
-                                           else if (state == 49) {
-                                           	System.out.println("Accepted: Class: Bool Literal Value: True");
-                                           }
-                                           else if (state == 51) {
-                                           	System.out.println("Accepted: Class: Float Literal Value: "+ output);
-                                           } else {
-                                           	if(k.containsKey(output)) {
-                                           		System.out.println("Accepted Class: " + k.get(output));
-                                           	}
-                                           	else {
-                                           		System.out.println("Second Loop Accepted: " + output + " " + state);
-                                           	}
-                                           }
+                                                if (state == 45) {
+                                                        query.add("Accepted: Class: Identifier Value: "+ output);
+                                                        System.out.println("Accepted: Class: Identifier Value: "+ output);
+                                                }
+                                                else if (state == 36) {
+                                                 query.add("Accepted: Class: float");
+                                                        System.out.println("Accepted: Class: float");
+                                                }
+                                                else if (state == 17) {
+                                                 query.add("Accepted: Class: if");
+                                                        System.out.println("Accepted: Class: if");
+                                                }
+                                                else if (state == 29) {
+                                                 query.add("Accepted: Class: while");
+                                                        System.out.println("Accepted: Class: while");
+                                                }
+                                                else if (state == 32) {
+                                                 query.add("Accepted: Class: for");
+                                                        System.out.println("Accepted: Class: for");
+                                                }
+                                                else if (state == 55) {
+                                                 query.add("Accepted: Class: Bool Literal Value: false");
+                                                        System.out.println("Accepted: Class: Bool Literal Value: false");
+                                                }
+                                                else if (state == 40) {
+                                                 query.add("Accepted: Class: bool");
+                                                        System.out.println("Accepted: Class: bool");
+                                                }
+                                                else if (state == 44) {
+                                                 query.add("Accepted: Class: else");
+                                                        System.out.println("Accepted: Class: else");
+                                                }
+                                                else if (state == 49) {
+                                                 query.add("Accepted: Class: Bool Literal Value: true");
+                                                        System.out.println("Accepted: Class: Bool Literal Value: true");
+                                                }
+                                                else if (state == 20) {
+                                                 query.add("Accepted: Class: int");
+                                                        System.out.println("Accepted: Class: int");
+                                                }
+                                                else if (state == 50) {
+                                                 query.add("Accepted: Class: Integer Literal Value: "+ output);
+                                                        System.out.println("Accepted: Class: Integer Literal Value: "+ output);
+                                                } else if (state == 51) {
+                                                 query.add("Accepted: Class: Float Literal Value: "+ output);
+                                                        System.out.println("Accepted: Class: Float Literal Value: "+ output);
+                                                } else {
+                                                        if(k.containsKey(output)) {
+                                                         query.add("Accepted Class: " + output);
+                                                                System.out.println("Accepted Class: " + output);
+                                                        }
+                                                        else {
+                                                         query.add("First Loop Accepted: " + output);
+                                                                System.out.println("First Loop Accepted: " + output);
+                                                        }
+                                                }
                                            state = 0;
                                            output="";
                                	}
@@ -273,48 +301,62 @@ public class ProjectOne {
                               
                        } else {
                                if (accept[state] == 1&&!output.strip().equals("")) {
-                                       if (state == 45) {
-                                       	System.out.println("Accepted: Class: Identifier Value: "+ output);
-                                       } else if (state == 50) {
-                                       	System.out.println("Accepted: Class: Integer Literal Value: "+ output);
-                                       }
-                                       else if (state == 36) {
-                                       	System.out.println("Accepted: Class: Float Type");
-                                       }
-                                       else if (state == 17) {
-                                       	System.out.println("Accepted: Class: If Keyword");
-                                       }
-                                       else if (state == 29) {
-                                       	System.out.println("Accepted: Class: While Keyword");
-                                       }
-                                       else if (state == 32) {
-                                       	System.out.println("Accepted: Class: For Keyword");
-                                       }
-                                       else if (state == 55) {
-                                       	System.out.println("Accepted: Class: Bool Literal Value: False");
-                                       }
-                                       else if (state == 40) {
-                                       	System.out.println("Accepted: Class: Bool Type");
-                                       }
-                                       else if (state == 44) {
-                                       	System.out.println("Accepted: Class: Else Keyword");
-                                       }
-                                       else if (state == 49) {
-                                       	System.out.println("Accepted: Class: Bool Literal Value: True");
-                                       }
-                                       else if (state == 20) {
-                                       	System.out.println("Accepted: Class: Integer Type");
-                                       }
-                                       else if (state == 51) {
-                                       	System.out.println("Accepted: Class: Float Literal Value: "+ output);
-                                       } else {
-                                       	if(k.containsKey(output)) {
-                                       		System.out.println("Accepted Class: " + k.get(output));
-                                       	}
-                                       	else {
-                                       		System.out.println("Last Loop Accepted: " + output);
-                                       	}
-                                       }
+                                if (state == 45) {
+                                        query.add("Accepted: Class: Identifier Value: "+ output);
+                                        System.out.println("Accepted: Class: Identifier Value: "+ output);
+                                }
+                                else if (state == 36) {
+                                 query.add("Accepted: Class: float");
+                                        System.out.println("Accepted: Class: float");
+                                }
+                                else if (state == 17) {
+                                 query.add("Accepted: Class: if");
+                                        System.out.println("Accepted: Class: if");
+                                }
+                                else if (state == 29) {
+                                 query.add("Accepted: Class: while");
+                                        System.out.println("Accepted: Class: while");
+                                }
+                                else if (state == 32) {
+                                 query.add("Accepted: Class: for");
+                                        System.out.println("Accepted: Class: for");
+                                }
+                                else if (state == 55) {
+                                 query.add("Accepted: Class: Bool Literal Value: false");
+                                        System.out.println("Accepted: Class: Bool Literal Value: false");
+                                }
+                                else if (state == 40) {
+                                 query.add("Accepted: Class: bool");
+                                        System.out.println("Accepted: Class: bool");
+                                }
+                                else if (state == 44) {
+                                 query.add("Accepted: Class: else");
+                                        System.out.println("Accepted: Class: else");
+                                }
+                                else if (state == 49) {
+                                 query.add("Accepted: Class: Bool Literal Value: true");
+                                        System.out.println("Accepted: Class: Bool Literal Value: true");
+                                }
+                                else if (state == 20) {
+                                 query.add("Accepted: Class: int");
+                                        System.out.println("Accepted: Class: int");
+                                }
+                                else if (state == 50) {
+                                 query.add("Accepted: Class: Integer Literal Value: "+ output);
+                                        System.out.println("Accepted: Class: Integer Literal Value: "+ output);
+                                } else if (state == 51) {
+                                 query.add("Accepted: Class: Float Literal Value: "+ output);
+                                        System.out.println("Accepted: Class: Float Literal Value: "+ output);
+                                } else {
+                                        if(k.containsKey(output)) {
+                                         query.add("Accepted Class: " + output);
+                                                System.out.println("Accepted Class: " + output);
+                                        }
+                                        else {
+                                         query.add("First Loop Accepted: " + output);
+                                                System.out.println("First Loop Accepted: " + output);
+                                        }
+                                }
                                        state = 0;
                                        output="";
                                }
@@ -332,7 +374,12 @@ public class ProjectOne {
                        }
                }
                scan.close();
+               return query;
                }
+       public static void main(String[] args){
+        System.out.println("Hi");
+        scanner();
+       }
 }
 
 
