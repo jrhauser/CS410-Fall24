@@ -209,7 +209,7 @@ public class ProjectOne {
                                                	System.out.println("Accepted: Class: Float Literal Value: "+ output);
                                                } else {
                                                	if(k.containsKey(output)) {
-                                                        query.add("Accepted Class: " + output);
+                                                        query.add("Accepted: Class: " + output);
                                                		System.out.println("Accepted: Class: " + output);
                                                	}
                                                	else {
@@ -275,7 +275,7 @@ public class ProjectOne {
                                                         System.out.println("Accepted: Class: Float Literal Value: "+ output);
                                                 } else {
                                                         if(k.containsKey(output)) {
-                                                         query.add("Accepted Class: " + output);
+                                                         query.add("Accepted: Class: " + output);
                                                                 System.out.println("Accepted: Class: " + output);
                                                         }
                                                         else {
@@ -349,7 +349,7 @@ public class ProjectOne {
                                         System.out.println("Accepted: Class: Float Literal Value: "+ output);
                                 } else {
                                         if(k.containsKey(output)) {
-                                         query.add("Accepted Class: " + output);
+                                         query.add("Accepted: Class: " + output);
                                                 System.out.println("Accepted: Class: " + output);
                                         }
                                         else {

@@ -1,15 +1,41 @@
 
 import java.util.ArrayList;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Phase2Parser {
     private static String currentToken;
+    private static ArrayList<String> queryTokens = new ArrayList<>();
     private static ArrayList<String> tokens = new ArrayList<>();
+    private static final Pattern textToken = Pattern.compile("Accepted: Class: (\\w+|[+\\-/%*{};=<>!().]+)( [^ V\\n" + //
+                "]+)?(?: Value: (\\w+.* *\\w*))*");
     public static void main(String[] args) {
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne();
-        System.out.println(query);
+        for(int i = 0; i < query.size(); i++){
+            Matcher textMatcher = textToken.matcher(query.get(i));
+            if (!textMatcher.matches()) {
+                System.out.println("Error: incorrect syntax for scanner output");
+                break;
+            }
+            String ourClass = textMatcher.group(1).strip();
+            System.out.println(ourClass);
+            if(textMatcher.group(3)!=null){
+                String ourValue = textMatcher.group(3).strip();
+                if(ourClass.equals("Identifier")){
+                queryTokens.add(ourClass+": " + ourValue);
+                }
+                else{
+                    queryTokens.add(ourClass+" Literal: " + ourValue);
+                }
+            }
+            else {
+                queryTokens.add(ourClass);
+            }
+
+        }
+        System.out.println(queryTokens);
         tokens.add("int");
         tokens.add("Identifier: x");
         tokens.add("=");
