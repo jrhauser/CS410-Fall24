@@ -210,7 +210,7 @@ public class ProjectOne {
                                                } else {
                                                	if(k.containsKey(output)) {
                                                         query.add("Accepted Class: " + output);
-                                               		System.out.println("Accepted Class: " + output);
+                                               		System.out.println("Accepted: Class: " + output);
                                                	}
                                                	else {
                                                         query.add("First Loop Accepted: " + output);
@@ -276,7 +276,7 @@ public class ProjectOne {
                                                 } else {
                                                         if(k.containsKey(output)) {
                                                          query.add("Accepted Class: " + output);
-                                                                System.out.println("Accepted Class: " + output);
+                                                                System.out.println("Accepted: Class: " + output);
                                                         }
                                                         else {
                                                          query.add("First Loop Accepted: " + output);
@@ -350,7 +350,7 @@ public class ProjectOne {
                                 } else {
                                         if(k.containsKey(output)) {
                                          query.add("Accepted Class: " + output);
-                                                System.out.println("Accepted Class: " + output);
+                                                System.out.println("Accepted: Class: " + output);
                                         }
                                         else {
                                          query.add("First Loop Accepted: " + output);
@@ -377,7 +377,6 @@ public class ProjectOne {
                return query;
                }
        public static void main(String[] args){
-        System.out.println("Hi");
         partOne();
        }
 }
