@@ -1,12 +1,26 @@
 
+import java.util.ArrayList;
+
+
 
 public class Phase2Parser {
-    private static String inputString;
+    private static String currentToken;
+    private static ArrayList<String> tokens = new ArrayList<String>();
     public static void main(String[] args) {
-
+        tokens.add("Integer Type");
+        tokens.add("Identifier Value: x");
+        tokens.add("Assignment Operator");
+        tokens.add("Integer Literal: 0");
+        tokens.add("Semicolon");
     }
     static boolean accept(String s) {
-        return s.equals(inputString);
+        var temp = s.equals(currentToken);
+        currentToken = getNextToken();
+        return temp;
+    }
+
+    static String getNextToken() {
+        return tokens.remove(0);
     }
 
     static void reject() {
