@@ -20,7 +20,6 @@ public class Phase2Parser {
                 break;
             }
             String ourClass = textMatcher.group(1).strip();
-            System.out.println(ourClass);
             if(textMatcher.group(3)!=null){
                 String ourValue = textMatcher.group(3).strip();
                 if(ourClass.equals("Identifier")){
