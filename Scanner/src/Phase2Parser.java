@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Phase2Parser {
     private static String currentToken;
-    private static ArrayList<String> tokens = new ArrayList<String>();
+    private static ArrayList<String> tokens = new ArrayList<>();
     public static void main(String[] args) {
         tokens.add("int");
         tokens.add("Identifier: x");
@@ -18,7 +18,9 @@ public class Phase2Parser {
     }
     static boolean accept(String s) {
         var temp = s.equals(currentToken);
-        currentToken = getNextToken();
+        if (temp) {
+            currentToken = getNextToken();
+        }
         return temp;
     }
 
@@ -52,9 +54,6 @@ public class Phase2Parser {
     }
 
     static void Program() {
-        if (accept("EOI")) {
-            return;
-        }
         if (accept("for")) {
             expect("(");
             Declaration();
@@ -104,7 +103,7 @@ public class Phase2Parser {
     static void Declaration() {
         Type();
         Name();
-        accept("=");
+        expect("=");
         Value();
     } 
 
@@ -126,6 +125,9 @@ public class Phase2Parser {
     }
 
     static void Name() {
+        if (currentToken == null) {
+            return;
+        } 
         if (currentToken.equals("EOI")) {
             return;
         }
