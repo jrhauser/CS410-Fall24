@@ -82,6 +82,7 @@ public class Phase2Parser {
     }
 
     static void Program() {
+        currentToken = getNextToken();
         if (accept("for")) {
             expect("(");
             Declaration();
@@ -133,6 +134,7 @@ public class Phase2Parser {
         Name();
         expect("=");
         Value();
+        expect(";");
     } 
 
     static void Assignment() {
@@ -166,7 +168,11 @@ public class Phase2Parser {
     }
         
     static void Value() {
-        return;
+        if(currentToken == "true" || currentToken == "false"){
+            Boolean();
+        } else if(acceptInteger(currentToken)){
+            Number();
+        }
     } 
     static void Number() {
         Integer();
@@ -178,7 +184,9 @@ public class Phase2Parser {
         reject();
     }
     static void Boolean() {
-
+        if(currentToken == "true" || currentToken == "false"){
+            accept(currentToken);
+        }
     } 
     static void Operator() {
         if (accept("+")) {
