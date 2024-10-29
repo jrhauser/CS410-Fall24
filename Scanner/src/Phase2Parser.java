@@ -10,6 +10,8 @@ public class Phase2Parser {
     private static ArrayList<String> tokens = new ArrayList<>();
     private static final Pattern textToken = Pattern.compile("Accepted: Class: (\\w+|[+\\-/%*{};=<>!().]+)( [^ V\\n" + //
                 "]+)?(?: Value: (\\w+.* *\\w*))*");
+    private static final Pattern numDeclaration = Pattern.compile("(Integer|Float) Literal: ([0-9]+.*[0-9]*)");
+    private static final Pattern identifierDeclaration = Pattern.compile("Identifier: ((\\w)+)");
     public static void main(String[] args) {
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne();
@@ -40,9 +42,23 @@ public class Phase2Parser {
         tokens.add("=");
         tokens.add("Integer: 0");
         tokens.add(";");
-        System.out.println(tokens);
         Program();
         System.out.println("valid input");
+        if(queryTokens.get(0).equals("int")||queryTokens.get(0).equals("float")){
+            System.out.println("declaration");
+            Matcher numDecMatcher = numDeclaration.matcher(queryTokens.get(3));
+            if(!numDecMatcher.matches()){
+                System.out.println("query");
+            }
+            
+            Matcher identMatcher = identifierDeclaration.matcher(queryTokens.get(1));
+            if(!identMatcher.matches()){
+                System.out.println("query2");
+            }
+            System.out.println("(MOV, "+ numDecMatcher.group(2)+", , " + identMatcher.group(1)+ ")");
+        }
+
+
     }
     static boolean accept(String s) {
         var temp = s.equals(currentToken);
