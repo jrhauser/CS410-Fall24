@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,9 @@ public class Phase2Parser {
                 "]+)?(?: Value: (\\w+.* *\\w*))*");
     private static final Pattern numDeclaration = Pattern.compile("(Integer|Float) Literal: ([0-9]+.*[0-9]*)");
     private static final Pattern identifierDeclaration = Pattern.compile("Identifier: ((\\w)+)");
+
+    private static List<List<Object>> atoms = new ArrayList<List<Object>>();
+
     public static void main(String[] args) {
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne();
@@ -96,6 +100,16 @@ public class Phase2Parser {
         }   
         throw new IllegalStateException("Expected a different token");
     }
+
+    static void atom(String instruction, Object operand1, Object operand2, Object result){
+        List<Object> newAtom = new ArrayList<Object>();
+        newAtom.add(instruction);
+        newAtom.add(operand1);
+        newAtom.add(operand2);
+        newAtom.add(result);
+        atoms.add(newAtom);
+    }
+
 
     static void Program() {
         currentToken = getNextToken();
