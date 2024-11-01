@@ -298,9 +298,14 @@ public class ParserTest {
         String instruction = "MOV";
         Object dest = Name();
         if (accept("=")) {
-            Object source = Value();
-            expect(";");
-            atom(instruction, source, " ", dest);
+            Object source = Expression();
+            if(accept(";")){
+                atom(instruction, source, " ", dest);
+            }
+            else {
+                atom(instruction, source, " ", dest);
+            }
+            
         } else if (accept("+=")) {
             Object operand2 = Value();
             atom("ADD", dest, operand2, dest);
@@ -357,6 +362,17 @@ public class ParserTest {
     static Object Expression() {
         Object temp = "temp";
         // System.out.println(currentToken);
+        if (currentToken.startsWith("Integer Literal: ")&&peekNextToken().equals(";")) {
+            Object token = currentToken.substring(17);
+            accept(currentToken);
+            return token;
+        } else if (currentToken.startsWith("Float Literal: ")&&peekNextToken().equals(";")) {
+            Object token = currentToken.substring(15);
+            accept(currentToken);
+            return token;
+
+        } else {
+        System.out.println("here");
         Object operand1 = Term();
         String instruction = Operator();
         Object operand2;
@@ -376,6 +392,7 @@ public class ParserTest {
         }
         atom(instruction, operand1, operand2, temp);
         return "temp";
+    }
     }
 
     static Object Term() {
