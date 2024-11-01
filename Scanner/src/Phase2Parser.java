@@ -46,6 +46,7 @@ public class Phase2Parser {
         tokens.add("=");
         tokens.add("Integer: 0");
         tokens.add(";");
+        tokens = queryTokens;
         Program();
         System.out.println("valid input");
         if(queryTokens.get(0).equals("int")||queryTokens.get(0).equals("float")){

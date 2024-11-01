@@ -115,7 +115,6 @@ public class ParserTest {
     newAtom.add(",");
     newAtom.add(cmp);
     newAtom.add(dest);
-    System.out.println(newAtom);
     atoms.add(newAtom);
 }
   
@@ -125,8 +124,6 @@ public class ParserTest {
   static void Program() {
       currentToken = getNextToken();
       Object nextToken = peekNextToken();
-      System.out.println(currentToken);
-      System.out.println(nextToken);
       //Im ignoring for, if, and while cases for now. Uncommenting Declaration() works how youd expect
       
     if(currentToken.equals("int")||currentToken.equals("float")) {
@@ -149,24 +146,47 @@ public class ParserTest {
 
   static void If() {
       String instruction = "TST";
-      expect("if");
+      accept("if");
       expect("(");
       Object left = Name();
-      Object cmp = Operator();
+      Object cmp = Comparison();
       Object right = Value();
       Object dest = "FIX";
       ifAtom(instruction, left, right, cmp, dest);
       expect(")");
-      accept("{");
-      System.out.println(tokens);
       Program();
+      //expect("{");
+      
       expect("}");
-      expect("else");
-      accept("{");
-      Program();
-      expect("}");
+      Else();
 
   }
+
+  static void Else() {
+        expect("else");
+        //expect("{");
+        Program();
+        expect("}");
+    }
+
+  static Object Comparison() {
+    if (accept("==")) {
+        return 1;
+    } else if (accept("!=")) {
+        return 6;
+    } else if (accept("<")) {
+        return 2;
+    } else if (accept("<=")) {
+        return 4;
+    } else if (accept(">")) {
+        return 3;
+    } else if (accept(">=")) {
+        return 5;
+    }
+    return null;
+}
+
+
   static void Assignment() {
       String instruction = "MOV";
       Object dest = Name();
@@ -253,24 +273,6 @@ public class ParserTest {
             return "MUL";
         } else if (accept("/")) {
             return "DIV";
-        }
-        else if (accept("==")) {
-            return "1";
-        }
-        else if (accept("<")) {
-            return "2";
-        }
-        else if (accept(">")) {
-            return "3";
-        }
-        else if (accept("<=")) {
-            return "4";
-        }
-        else if (accept(">=")) {
-            return "5";
-        }
-        else if (accept("!=")) {
-            return "6";
         }
         //++ and -- cant be here, might drop them entirely
         reject();
