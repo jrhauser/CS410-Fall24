@@ -210,13 +210,13 @@ static void label(Object dest){
     Object dest = "END";
     //System.out.println(tokens);
     ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
-    System.out.println(tokens);
+    //System.out.println(tokens);
     expect(";");
-    System.out.println(tokens);
+    //System.out.println(tokens);
     Expression();
-    System.out.println(tokens);
+    //System.out.println(tokens);
     expect(")");
-    System.out.println(tokens);
+    //System.out.println(tokens);
     //expect("{");
     Program();
     jump("START");
@@ -311,7 +311,7 @@ static void label(Object dest){
     else{
 
     }
-      expect(";");
+      //expect(";");
 
 
   }
@@ -362,7 +362,7 @@ static void label(Object dest){
       String instruction = Operator();
       Object operand2;
       if(instruction.equals("++")){
-        System.out.println("here");
+        //System.out.println("here");
         instruction = "ADD";
         operand2 = 1;
         //accept(currentToken);
