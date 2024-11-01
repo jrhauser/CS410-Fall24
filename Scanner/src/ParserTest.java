@@ -117,6 +117,28 @@ public class ParserTest {
     newAtom.add(dest);
     atoms.add(newAtom);
 }
+
+static void jump(Object dest){
+    List<Object> newAtom = new ArrayList<Object>();
+    newAtom.add("JMP");
+    newAtom.add(",");
+    newAtom.add(",");
+    newAtom.add(",");
+    newAtom.add(",");
+    newAtom.add(dest);
+    atoms.add(newAtom);
+}
+
+static void label(Object dest){
+    List<Object> newAtom = new ArrayList<Object>();
+    newAtom.add("LBL");
+    newAtom.add(",");
+    newAtom.add(",");
+    newAtom.add(",");
+    newAtom.add(",");
+    newAtom.add(dest);
+    atoms.add(newAtom);
+}
   
  
   
@@ -195,13 +217,16 @@ public class ParserTest {
       accept("if");
       expect("(");
       List<Object> condition = Condition();
-      Object dest = "FIX";
+      Object dest = "ELSE";
       ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
       expect(")");
       //expect("{");
       Program();
+      jump("END");
+      label("ELSE");
       expect("}");
       Else();
+      label("END");
 
   }
 
@@ -214,17 +239,17 @@ public class ParserTest {
 
   static Object Comparison() {
     if (accept("==")) {
-        return 1;
+        return 7-1;
     } else if (accept("!=")) {
-        return 6;
+        return 7-6;
     } else if (accept("<")) {
-        return 2;
+        return 7-2;
     } else if (accept("<=")) {
-        return 4;
+        return 7-4;
     } else if (accept(">")) {
-        return 3;
+        return 7-3;
     } else if (accept(">=")) {
-        return 5;
+        return 7-5;
     }
     return null;
 }
