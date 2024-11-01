@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes.Name;
+import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,104 +11,99 @@ import java.util.regex.Pattern;
 //  Prepare for ; to signify a new statement so more than one or two atoms get made ever
 
 public class ParserTest {
-    //token list declaration
+    // token list declaration
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
-    //atom list declaration
+    // atom list declaration
     private static List<List<Object>> atoms = new ArrayList<List<Object>>();
     private static ArrayList<String> queryTokens = new ArrayList<>();
     private static final Pattern textToken = Pattern.compile("Accepted: Class: (\\w+|[+\\-/%*{};=<>!().]+)( [^ V\\n" + //
-                "]+)?(?: Value: (\\w+.* *\\w*))*");
-    
-    
-    
-  public static void main(String args[]) {
-    ArrayList<String> query = new ArrayList<>();
-    query = ProjectOne.partOne();
-    for(int i = 0; i < query.size(); i++){
-        Matcher textMatcher = textToken.matcher(query.get(i));
-        if (!textMatcher.matches()) {
-            System.out.println("Error: incorrect syntax for scanner output");
-            break;
-        }
-        String ourClass = textMatcher.group(1).strip();
-        if(textMatcher.group(3)!=null){
-            String ourValue = textMatcher.group(3).strip();
-            if(ourClass.equals("Identifier")){
-            queryTokens.add(ourClass+": " + ourValue);
+            "]+)?(?: Value: (\\w+.* *\\w*))*");
+
+    public static void main(String args[]) {
+        ArrayList<String> query = new ArrayList<>();
+        query = ProjectOne.partOne();
+        for (int i = 0; i < query.size(); i++) {
+            Matcher textMatcher = textToken.matcher(query.get(i));
+            if (!textMatcher.matches()) {
+                System.out.println("Error: incorrect syntax for scanner output");
+                break;
             }
-            else{
-                queryTokens.add(ourClass+" Literal: " + ourValue);
+            String ourClass = textMatcher.group(1).strip();
+            if (textMatcher.group(3) != null) {
+                String ourValue = textMatcher.group(3).strip();
+                if (ourClass.equals("Identifier")) {
+                    queryTokens.add(ourClass + ": " + ourValue);
+                } else {
+                    queryTokens.add(ourClass + " Literal: " + ourValue);
+                }
+            } else {
+                queryTokens.add(ourClass);
             }
+
         }
-        else {
-            queryTokens.add(ourClass);
+        tokens = queryTokens;
+        Program();
+
+        System.out.println("valid input");
+        for (int i = 0; i < atoms.size(); i++) {
+            System.out.print(atoms.get(i).get(0));
+            for (int j = 1; j < atoms.get(i).size() - 2; j++) {
+                System.out.print(atoms.get(i).get(j) + ", ");
+            }
+            System.out.print(atoms.get(i).get(atoms.get(i).size() - 2));
+            System.out.print(atoms.get(i).get(atoms.get(i).size() - 1));
+            System.out.println("");
         }
 
+        /*
+         * tokens.clear();
+         * atoms.clear();
+         * 
+         * tokens = queryTokens;
+         * System.out.println(tokens);
+         * 
+         * Program();
+         * 
+         * System.out.println("valid input");
+         * for (int i = 0; i < atoms.size(); i++) {
+         * System.out.print(atoms.get(i).get(0));
+         * for (int j = 1; j < atoms.get(i).size() - 2; j++) {
+         * System.out.print(atoms.get(i).get(j) + ", ");
+         * }
+         * System.out.print(atoms.get(i).get(atoms.get(i).size() - 2));
+         * System.out.print(atoms.get(i).get(atoms.get(i).size() - 1));
+         * System.out.println("");
+         * }
+         */
     }
-    //declare your test tokens
-    tokens.add("Identifier: a");
-    tokens.add("+");
-    tokens.add("Integer Literal: 5");
-    System.out.println(tokens);
-    
-   Program();
-    
-    System.out.println("valid input");
-    for(int i = 0; i < atoms.size(); i++){
-        System.out.print(atoms.get(i).get(0));
-        for(int j = 1; j < atoms.get(i).size()-2; j++){
-            System.out.print(atoms.get(i).get(j)+ ", ");
+
+    // The necessary simplifiers
+    static boolean accept(String s) {
+        var temp = s.equals(currentToken);
+        if (temp) {
+            currentToken = getNextToken();
         }
-        System.out.print(atoms.get(i).get(atoms.get(i).size()-2));
-        System.out.print(atoms.get(i).get(atoms.get(i).size()-1));
-        System.out.println("");
+        return temp;
     }
-    
 
-    tokens.clear();
-    atoms.clear();
+    static void reject() {
+        throw new IllegalStateException("Expected a different token");
+    }
 
-    tokens = queryTokens;
-    System.out.println(tokens);
-
-    Program();
-    
-    System.out.println("valid input");
-    for(int i = 0; i < atoms.size(); i++){
-        System.out.print(atoms.get(i).get(0));
-        for(int j = 1; j < atoms.get(i).size()-2; j++){
-            System.out.print(atoms.get(i).get(j)+ ", ");
+    static boolean expect(String s) {
+        if (accept(s)) {
+            return true;
         }
-        System.out.print(atoms.get(i).get(atoms.get(i).size()-2));
-        System.out.print(atoms.get(i).get(atoms.get(i).size()-1));
-        System.out.println("");
+        throw new IllegalStateException("Expected a different token");
     }
-  }
-  
-  //The necessary simplifiers
-  static boolean accept(String s) {
-    var temp = s.equals(currentToken);
-    if (temp) {
-        currentToken = getNextToken();
+
+    static String getNextToken() {
+        if (!tokens.isEmpty()) {
+            return tokens.remove(0);
+        }
+        return "EOI";
     }
-    return temp;
-  }
-  static void reject() {
-      throw new IllegalStateException("Expected a different token");
-  }
-  static boolean expect(String s) {
-      if (accept(s)) {
-          return true;
-      }
-      throw new IllegalStateException("Expected a different token");
-  }
-  static String getNextToken() {
-      if (!tokens.isEmpty()) {
-          return tokens.remove(0);
-      }
-      return "EOI"; 
-  }
 
   static String peekNextToken() {
     if (!tokens.isEmpty()) {
@@ -227,76 +223,76 @@ static void label(Object dest){
     label("END");
     expect("}");
 
-  }
-  static void While() {
-    label("START");
-    String instruction = "TST";
-    expect("(");
-    List<Object> condition = Condition();
-    Object dest = "END";
-    ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
-    expect(")");
-    //expect("{");
-    Program();
-    jump("START");
-    label("END");
-    expect("}");
-  }
+    }
 
-  static List<Object> Condition() {
-    List<Object> results = new ArrayList<Object>();
-    Object left = Name();
-    Object cmp = Comparison();
-    Object right = Value();
-    results.add(left);
-    results.add(cmp);
-    results.add(right);
-    return results;
-    
-}
+    static void While() {
+        label("START");
+        String instruction = "TST";
+        expect("(");
+        List<Object> condition = Condition();
+        Object dest = "END";
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        expect(")");
+        // expect("{");
+        Program();
+        jump("START");
+        label("END");
+        expect("}");
+    }
 
-  static void If() {
-      String instruction = "TST";
-      accept("if");
-      expect("(");
-      List<Object> condition = Condition();
-      Object dest = "ELSE";
-      ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
-      expect(")");
-      //expect("{");
-      Program();
-      jump("END");
-      label("ELSE");
-      expect("}");
-      Else();
-      label("END");
+    static List<Object> Condition() {
+        List<Object> results = new ArrayList<Object>();
+        Object left = Name();
+        Object cmp = Comparison();
+        Object right = Value();
+        results.add(left);
+        results.add(cmp);
+        results.add(right);
+        return results;
 
-  }
+    }
 
-  static void Else() {
+    static void If() {
+        String instruction = "TST";
+        accept("if");
+        expect("(");
+        List<Object> condition = Condition();
+        Object dest = "ELSE";
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        expect(")");
+        // expect("{");
+        Program();
+        jump("END");
+        label("ELSE");
+        expect("}");
+        Else();
+        label("END");
+
+    }
+
+    static void Else() {
         expect("else");
-        //expect("{");
+        // expect("{");
         Program();
         expect("}");
     }
 
-  static Object Comparison() {
-    if (accept("==")) {
-        return 7-1;
-    } else if (accept("!=")) {
-        return 7-6;
-    } else if (accept("<")) {
-        return 7-2;
-    } else if (accept("<=")) {
-        return 7-4;
-    } else if (accept(">")) {
-        return 7-3;
-    } else if (accept(">=")) {
-        return 7-5;
+    static Object Comparison() {
+        if (accept("==")) {
+            return 7 - 1;
+        } else if (accept("!=")) {
+            return 7 - 6;
+        } else if (accept("<")) {
+            return 7 - 2;
+        } else if (accept("<=")) {
+            return 7 - 4;
+        } else if (accept(">")) {
+            return 7 - 3;
+        } else if (accept(">=")) {
+            return 7 - 5;
+        }
+        return null;
     }
-    return null;
-}
-
 
   static void Assignment() {
       String instruction = "MOV";
@@ -327,27 +323,28 @@ static void label(Object dest){
         } else {
             accept("float");
         }
-  }
-  static Object Name() {
-      if(currentToken.startsWith("Identifier:")){
-        Object token = currentToken.substring(12);
-        accept(currentToken);
-        return token;
-      }
-      reject();
-      return null;
+    }
 
-  }
-  static Object Value() {
-      if(currentToken.startsWith("Integer Literal: ")){
-        Object token = currentToken.substring(17);
-        accept(currentToken);
-          return token;
-      }
-      else if (currentToken.startsWith("Float Literal: ")){
-        Object token = currentToken.substring(15);
-        accept(currentToken);
-        return token;
+    static Object Name() {
+        if (currentToken.startsWith("Identifier:")) {
+            Object token = currentToken.substring(12);
+            accept(currentToken);
+            return token;
+        }
+        reject();
+        return null;
+
+    }
+
+    static Object Value() {
+        if (currentToken.startsWith("Integer Literal: ")) {
+            Object token = currentToken.substring(17);
+            accept(currentToken);
+            return token;
+        } else if (currentToken.startsWith("Float Literal: ")) {
+            Object token = currentToken.substring(15);
+            accept(currentToken);
+            return token;
 
       }
       else {
@@ -415,6 +412,10 @@ static void label(Object dest){
             return "MUL";
         } else if (accept("/")) {
             return "DIV";
+        } else if (accept("=")) {
+            return "MOV";
+        } else if (accept("+=")) {
+            return "ADDI";
         }
         else if(accept("++")){
             return "++";
@@ -422,6 +423,6 @@ static void label(Object dest){
         //++ and -- cant be here, might drop them entirely
         reject();
         return "";
-  }
-  
+    }
+
 }
