@@ -53,7 +53,16 @@ public class ParserTest {
    Program();
     
     System.out.println("valid input");
-    System.out.println(atoms);
+    for(int i = 0; i < atoms.size(); i++){
+        System.out.print(atoms.get(i).get(0));
+        for(int j = 1; j < atoms.get(i).size()-2; j++){
+            System.out.print(atoms.get(i).get(j)+ ", ");
+        }
+        System.out.print(atoms.get(i).get(atoms.get(i).size()-2));
+        System.out.print(atoms.get(i).get(atoms.get(i).size()-1));
+        System.out.println("");
+    }
+    
 
     tokens.clear();
     atoms.clear();
@@ -64,7 +73,15 @@ public class ParserTest {
     Program();
     
     System.out.println("valid input");
-    System.out.println(atoms);
+    for(int i = 0; i < atoms.size(); i++){
+        System.out.print(atoms.get(i).get(0));
+        for(int j = 1; j < atoms.get(i).size()-2; j++){
+            System.out.print(atoms.get(i).get(j)+ ", ");
+        }
+        System.out.print(atoms.get(i).get(atoms.get(i).size()-2));
+        System.out.print(atoms.get(i).get(atoms.get(i).size()-1));
+        System.out.println("");
+    }
   }
   
   //The necessary simplifiers
@@ -101,42 +118,50 @@ public class ParserTest {
   //atom generation function
   static void atom(String instruction, Object operand1, Object operand2, Object result){
       List<Object> newAtom = new ArrayList<Object>();
+      newAtom.add("(");
       newAtom.add(instruction);
       newAtom.add(operand1);
       newAtom.add(operand2);
       newAtom.add(result);
+      newAtom.add(")");
       atoms.add(newAtom);
   }
   static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest){
     List<Object> newAtom = new ArrayList<Object>();
+    newAtom.add("(");
     newAtom.add(instruction);
     newAtom.add(left);
     newAtom.add(right);
-    newAtom.add(",");
+    newAtom.add(" ");
     newAtom.add(cmp);
     newAtom.add(dest);
+    newAtom.add(")");
     atoms.add(newAtom);
 }
 
 static void jump(Object dest){
     List<Object> newAtom = new ArrayList<Object>();
+    newAtom.add("(");
     newAtom.add("JMP");
-    newAtom.add(",");
-    newAtom.add(",");
-    newAtom.add(",");
-    newAtom.add(",");
+    newAtom.add(" ");
+    newAtom.add(" ");
+    newAtom.add(" ");
+    newAtom.add(" ");
     newAtom.add(dest);
+    newAtom.add(")");
     atoms.add(newAtom);
 }
 
 static void label(Object dest){
     List<Object> newAtom = new ArrayList<Object>();
+    newAtom.add("(");
     newAtom.add("LBL");
-    newAtom.add(",");
-    newAtom.add(",");
-    newAtom.add(",");
-    newAtom.add(",");
+    newAtom.add(" ");
+    newAtom.add(" ");
+    newAtom.add(" ");
+    newAtom.add(" ");
     newAtom.add(dest);
+    newAtom.add(")");
     atoms.add(newAtom);
 }
   
@@ -266,7 +291,7 @@ static void label(Object dest){
       expect("=");
       Object source = Value();
       expect(";");
-      atom(instruction, source, ",", dest);
+      atom(instruction, source, " ", dest);
   }
   static void Type() {
       if (accept("int")) {
