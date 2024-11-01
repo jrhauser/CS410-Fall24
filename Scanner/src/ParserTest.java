@@ -90,6 +90,13 @@ public class ParserTest {
       }
       return "EOI"; 
   }
+
+  static String peekNextToken() {
+    if (!tokens.isEmpty()) {
+        return tokens.get(0);
+    }
+    return "EOI"; 
+}
   
   //atom generation function
   static void atom(String instruction, Object operand1, Object operand2, Object result){
@@ -100,16 +107,36 @@ public class ParserTest {
       newAtom.add(result);
       atoms.add(newAtom);
   }
+  static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest){
+    List<Object> newAtom = new ArrayList<Object>();
+    newAtom.add(instruction);
+    newAtom.add(left);
+    newAtom.add(right);
+    newAtom.add(",");
+    newAtom.add(cmp);
+    newAtom.add(dest);
+    System.out.println(newAtom);
+    atoms.add(newAtom);
+}
   
  
   
   //begin the nonterminals
   static void Program() {
       currentToken = getNextToken();
+      Object nextToken = peekNextToken();
+      System.out.println(currentToken);
+      System.out.println(nextToken);
       //Im ignoring for, if, and while cases for now. Uncommenting Declaration() works how youd expect
       
     if(currentToken.equals("int")||currentToken.equals("float")) {
         Declaration();
+    }
+    else if(currentToken.startsWith("Identifier: ")&&nextToken.equals("=")){
+        Assignment();
+    }
+    else if (currentToken.equals("if")) {
+        If();
     }
     else{
       Expression();
@@ -118,6 +145,27 @@ public class ParserTest {
   static void Declaration() {
       Type();
       Assignment();
+  }
+
+  static void If() {
+      String instruction = "TST";
+      expect("if");
+      expect("(");
+      Object left = Name();
+      Object cmp = Operator();
+      Object right = Value();
+      Object dest = "FIX";
+      ifAtom(instruction, left, right, cmp, dest);
+      expect(")");
+      accept("{");
+      System.out.println(tokens);
+      Program();
+      expect("}");
+      expect("else");
+      accept("{");
+      Program();
+      expect("}");
+
   }
   static void Assignment() {
       String instruction = "MOV";
@@ -168,8 +216,6 @@ public class ParserTest {
   //ive separated expression into a separate set of functions, need to connect it with declaration somehow
   static Object Expression() {
       Object temp = "temp";
-      System.out.println(currentToken);
-      System.out.println(currentToken.startsWith("Identifier: "));
       Object operand1 = Term();
       String instruction = Operator();
       Object operand2 = Term();
@@ -193,6 +239,7 @@ public class ParserTest {
           accept(currentToken);
           return tempValue;
       }
+      
       reject();
       return "";
   }
@@ -206,6 +253,24 @@ public class ParserTest {
             return "MUL";
         } else if (accept("/")) {
             return "DIV";
+        }
+        else if (accept("==")) {
+            return "1";
+        }
+        else if (accept("<")) {
+            return "2";
+        }
+        else if (accept(">")) {
+            return "3";
+        }
+        else if (accept("<=")) {
+            return "4";
+        }
+        else if (accept(">=")) {
+            return "5";
+        }
+        else if (accept("!=")) {
+            return "6";
         }
         //++ and -- cant be here, might drop them entirely
         reject();
