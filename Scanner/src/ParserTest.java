@@ -106,123 +106,120 @@ public class ParserTest {
         return "EOI";
     }
 
-  static String peekNextToken() {
-    if (!tokens.isEmpty()) {
-        return tokens.get(0);
+    static String peekNextToken() {
+        if (!tokens.isEmpty()) {
+            return tokens.get(0);
+        }
+        return "EOI";
     }
-    return "EOI"; 
-}
-  
-  //atom generation function
-  static void atom(String instruction, Object operand1, Object operand2, Object result){
-      List<Object> newAtom = new ArrayList<Object>();
-      newAtom.add("(");
-      newAtom.add(instruction);
-      newAtom.add(operand1);
-      newAtom.add(operand2);
-      newAtom.add(result);
-      newAtom.add(")");
-      //System.out.println(newAtom);
-      atoms.add(newAtom);
-  }
-  static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest){
-    List<Object> newAtom = new ArrayList<Object>();
-    newAtom.add("(");
-    newAtom.add(instruction);
-    newAtom.add(left);
-    newAtom.add(right);
-    newAtom.add(" ");
-    newAtom.add(cmp);
-    newAtom.add(dest);
-    newAtom.add(")");
-    //System.out.println(newAtom);
-    atoms.add(newAtom);
-}
 
-static void jump(Object dest){
-    List<Object> newAtom = new ArrayList<Object>();
-    newAtom.add("(");
-    newAtom.add("JMP");
-    newAtom.add(" ");
-    newAtom.add(" ");
-    newAtom.add(" ");
-    newAtom.add(" ");
-    newAtom.add(dest);
-    newAtom.add(")");
-    //System.out.println(newAtom);
-    atoms.add(newAtom);
-}
-
-static void label(Object dest){
-    List<Object> newAtom = new ArrayList<Object>();
-    newAtom.add("(");
-    newAtom.add("LBL");
-    newAtom.add(" ");
-    newAtom.add(" ");
-    newAtom.add(" ");
-    newAtom.add(" ");
-    newAtom.add(dest);
-    newAtom.add(")");
-    //System.out.println(newAtom);
-    atoms.add(newAtom);
-}
-  
- 
-  
-  //begin the nonterminals
-  static void Program() {
-      currentToken = getNextToken();
-      Object nextToken = peekNextToken();
-      //System.out.println(currentToken);
-      //Im ignoring for, if, and while cases for now. Uncommenting Declaration() works how youd expect
-      
-    if(accept("int")||accept("float")) {
-        Declaration();
+    // atom generation function
+    static void atom(String instruction, Object operand1, Object operand2, Object result) {
+        List<Object> newAtom = new ArrayList<Object>();
+        newAtom.add("(");
+        newAtom.add(instruction);
+        newAtom.add(operand1);
+        newAtom.add(operand2);
+        newAtom.add(result);
+        newAtom.add(")");
+        // System.out.println(newAtom);
+        atoms.add(newAtom);
     }
-    else if(currentToken.startsWith("Identifier: ")&&nextToken.equals("=")|| nextToken.equals("+=")||nextToken.equals("-=")){
+
+    static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest) {
+        List<Object> newAtom = new ArrayList<Object>();
+        newAtom.add("(");
+        newAtom.add(instruction);
+        newAtom.add(left);
+        newAtom.add(right);
+        newAtom.add(" ");
+        newAtom.add(cmp);
+        newAtom.add(dest);
+        newAtom.add(")");
+        // System.out.println(newAtom);
+        atoms.add(newAtom);
+    }
+
+    static void jump(Object dest) {
+        List<Object> newAtom = new ArrayList<Object>();
+        newAtom.add("(");
+        newAtom.add("JMP");
+        newAtom.add(" ");
+        newAtom.add(" ");
+        newAtom.add(" ");
+        newAtom.add(" ");
+        newAtom.add(dest);
+        newAtom.add(")");
+        // System.out.println(newAtom);
+        atoms.add(newAtom);
+    }
+
+    static void label(Object dest) {
+        List<Object> newAtom = new ArrayList<Object>();
+        newAtom.add("(");
+        newAtom.add("LBL");
+        newAtom.add(" ");
+        newAtom.add(" ");
+        newAtom.add(" ");
+        newAtom.add(" ");
+        newAtom.add(dest);
+        newAtom.add(")");
+        // System.out.println(newAtom);
+        atoms.add(newAtom);
+    }
+
+    // begin the nonterminals
+    static void Program() {
+        currentToken = getNextToken();
+        Object nextToken = peekNextToken();
+        // System.out.println(currentToken);
+        // Im ignoring for, if, and while cases for now. Uncommenting Declaration()
+        // works how youd expect
+
+        if (accept("int") || accept("float")) {
+            Declaration();
+        } else if (currentToken.startsWith("Identifier: ") && nextToken.equals("=") || nextToken.equals("+=")
+                || nextToken.equals("-=")) {
+            Assignment();
+        } else if (accept("if")) {
+            If();
+        } else if (accept("while")) {
+            While();
+        } else if (accept("for")) {
+            For();
+        } else {
+            Expression();
+        }
+    }
+
+    static void Declaration() {
+        Type();
         Assignment();
     }
-    else if (accept("if")) {
-        If();
-    }
-    else if (accept("while")) {
-        While();
-    }
-    else if (accept("for")) {
-        For();
-    }
-    else{
-      Expression();
-    }
-  }
-  static void Declaration() {
-      Type();
-      Assignment();
-  }
-  
-  static void For() {
-    //System.out.println(tokens);
-    String instruction = "TST";
-    expect("(");
-    Declaration();
-    //System.out.println(tokens);
-    label("START");
-    List<Object> condition = Condition();
-    Object dest = "END";
-    //System.out.println(tokens);
-    ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
-    //System.out.println(tokens);
-    expect(";");
-    //System.out.println(tokens);
-    Expression();
-    //System.out.println(tokens);
-    expect(")");
-    //System.out.println(tokens);
-    //expect("{");
-    Program();
-    jump("START");
-    label("END");
-    expect("}");
+
+    static void For() {
+        // System.out.println(tokens);
+        String instruction = "TST";
+        expect("(");
+        Declaration();
+        // System.out.println(tokens);
+        label("START");
+        List<Object> condition = Condition();
+        Object dest = "END";
+        // System.out.println(tokens);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        // System.out.println(tokens);
+        expect(";");
+        // System.out.println(tokens);
+        Expression();
+        // System.out.println(tokens);
+        expect(")");
+        // System.out.println(tokens);
+        // expect("{");
+        Program();
+        jump("START");
+        label("END");
+        expect("}");
 
     }
 
@@ -238,7 +235,7 @@ static void label(Object dest){
         Program();
         jump("START");
         label("END");
-        //expect("}");
+        // expect("}");
     }
 
     static List<Object> Condition() {
@@ -275,10 +272,9 @@ static void label(Object dest){
     }
 
     static void Else() {
-        expect("else");
-        // expect("{");
-        Program();
-        //expect("}");
+        if (accept("else")) {
+            Program();
+        }
     }
 
     static Object Comparison() {
@@ -298,29 +294,28 @@ static void label(Object dest){
         return null;
     }
 
-  static void Assignment() {
-      String instruction = "MOV";
-      Object dest = Name();
-      if (accept("=")) {
-        Object source = Value();
-        expect(";");
-        atom(instruction, source, " ", dest);
-    } else if (accept("+=")) {
-        Object operand2 = Value();
-        atom("ADD", dest, operand2, dest);
-    } else if (accept("-=")){
-        Object operand2 = Value();
-        atom("SUB", dest, operand2, dest);
-    }
-    else{
+    static void Assignment() {
+        String instruction = "MOV";
+        Object dest = Name();
+        if (accept("=")) {
+            Object source = Value();
+            expect(";");
+            atom(instruction, source, " ", dest);
+        } else if (accept("+=")) {
+            Object operand2 = Value();
+            atom("ADD", dest, operand2, dest);
+        } else if (accept("-=")) {
+            Object operand2 = Value();
+            atom("SUB", dest, operand2, dest);
+        } else {
+
+        }
+        // expect(";");
 
     }
-      //expect(";");
 
-
-  }
-  static void Type() {
-      if (accept("int")) {
+    static void Type() {
+        if (accept("int")) {
             return;
         } else if (accept("bool")) {
             return;
@@ -350,65 +345,63 @@ static void label(Object dest){
             accept(currentToken);
             return token;
 
-      }
-      else {
+        } else {
 
-      }
-      reject();
-      return null;
-  }
-  
-  //ive separated expression into a separate set of functions, need to connect it with declaration somehow
-  static Object Expression() {
-      Object temp = "temp";
-      //System.out.println(currentToken);
-      Object operand1 = Term();
-      String instruction = Operator();
-      Object operand2;
-      if(instruction.equals("++")){
-        //System.out.println("here");
-        instruction = "ADD";
-        operand2 = 1;
-        //accept(currentToken);
-        temp = operand1;
-      }
-      else if (instruction.equals("--")){
-        instruction = "SUB";
-        operand2 = 1;
-        //accept(currentToken);
-        temp = operand1;
-      }
-      else {
-        operand2 = Term();
-      }
-      atom(instruction, operand1, operand2, temp);
-      return "temp";
-  }
-  
-  static Object Term() {
-      Object tempValue;
-      System.out.println(currentToken);
-      if(currentToken.startsWith("Identifier: ")){
-          tempValue = currentToken.substring(12, currentToken.length());
-          accept(currentToken);
-          return tempValue;
-      }else if(currentToken.startsWith("Integer Literal: ")){
-          tempValue = currentToken.substring(17);
-          accept(currentToken);
-          return tempValue;
-      }
-      else if (currentToken.startsWith("Float Literal: ")){
-        tempValue = currentToken.substring(15);
-          accept(currentToken);
-          return tempValue;
-      }
-      
-      reject();
-      return "";
-  }
-  static String Operator(){
-      
-      if (accept("+")) {
+        }
+        reject();
+        return null;
+    }
+
+    // ive separated expression into a separate set of functions, need to connect it
+    // with declaration somehow
+    static Object Expression() {
+        Object temp = "temp";
+        // System.out.println(currentToken);
+        Object operand1 = Term();
+        String instruction = Operator();
+        Object operand2;
+        if (instruction.equals("++")) {
+            // System.out.println("here");
+            instruction = "ADD";
+            operand2 = 1;
+            // accept(currentToken);
+            temp = operand1;
+        } else if (instruction.equals("--")) {
+            instruction = "SUB";
+            operand2 = 1;
+            // accept(currentToken);
+            temp = operand1;
+        } else {
+            operand2 = Term();
+        }
+        atom(instruction, operand1, operand2, temp);
+        return "temp";
+    }
+
+    static Object Term() {
+        Object tempValue;
+        System.out.println(currentToken);
+        if (currentToken.startsWith("Identifier: ")) {
+            tempValue = currentToken.substring(12, currentToken.length());
+            accept(currentToken);
+            return tempValue;
+        } else if (currentToken.startsWith("Integer Literal: ")) {
+            tempValue = currentToken.substring(17);
+            accept(currentToken);
+            return tempValue;
+        } else if (currentToken.startsWith("Float Literal: ")) {
+            tempValue = currentToken.substring(15);
+            accept(currentToken);
+            return tempValue;
+        }
+
+        reject();
+        return "";
+    }
+
+    static String Operator() {
+
+        if (accept("+")) {
             return "ADD";
         } else if (accept("-")) {
             return "SUB";
@@ -420,11 +413,10 @@ static void label(Object dest){
             return "MOV";
         } else if (accept("+=")) {
             return "ADDI";
-        }
-        else if(accept("++")){
+        } else if (accept("++")) {
             return "++";
         }
-        //++ and -- cant be here, might drop them entirely
+        // ++ and -- cant be here, might drop them entirely
         reject();
         return "";
     }
