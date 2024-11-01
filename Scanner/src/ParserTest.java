@@ -43,6 +43,7 @@ public class ParserTest {
 
         }
         tokens = queryTokens;
+        System.out.println(queryTokens);
         Program();
 
         System.out.println("valid input");
@@ -264,7 +265,10 @@ static void label(Object dest){
         Program();
         jump("END");
         label("ELSE");
+        expect(";");
+        System.out.println(currentToken);
         expect("}");
+        System.out.println(currentToken);
         Else();
         label("END");
 
@@ -274,7 +278,7 @@ static void label(Object dest){
         expect("else");
         // expect("{");
         Program();
-        expect("}");
+        //expect("}");
     }
 
     static Object Comparison() {
