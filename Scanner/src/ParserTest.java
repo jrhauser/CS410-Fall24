@@ -237,7 +237,7 @@ static void label(Object dest){
         Program();
         jump("START");
         label("END");
-        expect("}");
+        //expect("}");
     }
 
     static List<Object> Condition() {
