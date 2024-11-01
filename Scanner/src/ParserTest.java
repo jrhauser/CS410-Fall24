@@ -126,14 +126,20 @@ public class ParserTest {
       Object nextToken = peekNextToken();
       //Im ignoring for, if, and while cases for now. Uncommenting Declaration() works how youd expect
       
-    if(currentToken.equals("int")||currentToken.equals("float")) {
+    if(accept("int")||accept("float")) {
         Declaration();
     }
     else if(currentToken.startsWith("Identifier: ")&&nextToken.equals("=")){
         Assignment();
     }
-    else if (currentToken.equals("if")) {
+    else if (accept("if")) {
         If();
+    }
+    else if (accept("while")) {
+        While();
+    }
+    else if (accept("for")) {
+        For();
     }
     else{
       Expression();
@@ -143,20 +149,57 @@ public class ParserTest {
       Type();
       Assignment();
   }
+  
+  static void For() {
+    String instruction = "TST";
+    expect("(");
+    Declaration();
+    List<Object> condition = Condition();
+    Object dest = "FIX";
+    ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+    expect(";");
+    Expression();
+    expect(")");
+    //expect("{");
+    Program();
+    expect("}");
+
+  }
+  static void While() {
+    String instruction = "TST";
+    accept("while");
+    expect("(");
+    List<Object> condition = Condition();
+    Object dest = "FIX";
+    ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+    expect(")");
+    //expect("{");
+    Program();
+    expect("}");
+  }
+
+  static List<Object> Condition() {
+    List<Object> results = new ArrayList<Object>();
+    Object left = Name();
+    Object cmp = Comparison();
+    Object right = Value();
+    results.add(left);
+    results.add(cmp);
+    results.add(right);
+    return results;
+    
+}
 
   static void If() {
       String instruction = "TST";
       accept("if");
       expect("(");
-      Object left = Name();
-      Object cmp = Comparison();
-      Object right = Value();
+      List<Object> condition = Condition();
       Object dest = "FIX";
-      ifAtom(instruction, left, right, cmp, dest);
+      ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
       expect(")");
-      Program();
       //expect("{");
-      
+      Program();
       expect("}");
       Else();
 
