@@ -60,7 +60,8 @@ public class ParserTest {
     atoms.clear();
 
     tokens = queryTokens;
-    
+    System.out.println(tokens);
+
     Program();
     
     System.out.println("valid input");
