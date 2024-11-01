@@ -44,14 +44,13 @@ public class ParserTest {
         }
 
     }
-    System.out.println(queryTokens);
     //declare your test tokens
     tokens.add("Identifier: a");
     tokens.add("+");
-    tokens.add("Integer: 5");
+    tokens.add("Integer Literal: 5");
     System.out.println(tokens);
     
-    Program();
+   Program();
     
     System.out.println("valid input");
     System.out.println(atoms);
@@ -108,18 +107,25 @@ public class ParserTest {
   static void Program() {
       currentToken = getNextToken();
       //Im ignoring for, if, and while cases for now. Uncommenting Declaration() works how youd expect
-      //Declaration();
+      
+    if(currentToken.equals("int")||currentToken.equals("float")) {
+        Declaration();
+    }
+    else{
       Expression();
+    }
   }
   static void Declaration() {
       Type();
       Assignment();
   }
   static void Assignment() {
-      Name();
+      String instruction = "MOV";
+      Object dest = Name();
       expect("=");
-      Value();
+      Object source = Value();
       expect(";");
+      atom(instruction, source, ",", dest);
   }
   static void Type() {
       if (accept("int")) {
@@ -130,19 +136,33 @@ public class ParserTest {
             accept("float");
         }
   }
-  static void Name() {
+  static Object Name() {
       if(currentToken.startsWith("Identifier:")){
-          accept(currentToken);
-          return;
+        Object token = currentToken.substring(12);
+        accept(currentToken);
+        return token;
       }
       reject();
+      return null;
+
   }
-  static void Value() {
-      if(currentToken.startsWith("Integer: ")){
-          accept(currentToken);
-          return;
+  static Object Value() {
+      if(currentToken.startsWith("Integer Literal: ")){
+        Object token = currentToken.substring(17);
+        accept(currentToken);
+          return token;
+      }
+      else if (currentToken.startsWith("Float Literal: ")){
+        Object token = currentToken.substring(15);
+        accept(currentToken);
+        return token;
+
+      }
+      else {
+
       }
       reject();
+      return null;
   }
   
   //ive separated expression into a separate set of functions, need to connect it with declaration somehow
@@ -163,8 +183,13 @@ public class ParserTest {
           tempValue = currentToken.substring(12, currentToken.length());
           accept(currentToken);
           return tempValue;
-      }else if(currentToken.startsWith("Integer: ")){
-          tempValue = currentToken.substring(9, currentToken.length());
+      }else if(currentToken.startsWith("Integer Literal: ")){
+          tempValue = currentToken.substring(17);
+          accept(currentToken);
+          return tempValue;
+      }
+      else if (currentToken.startsWith("Float Literal: ")){
+        tempValue = currentToken.substring(15);
           accept(currentToken);
           return tempValue;
       }
