@@ -176,27 +176,32 @@ static void label(Object dest){
     String instruction = "TST";
     expect("(");
     Declaration();
+    label("START");
     List<Object> condition = Condition();
-    Object dest = "FIX";
+    Object dest = "END";
     ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
     expect(";");
     Expression();
     expect(")");
     //expect("{");
     Program();
+    jump("START");
+    label("END");
     expect("}");
 
   }
   static void While() {
+    label("START");
     String instruction = "TST";
-    accept("while");
     expect("(");
     List<Object> condition = Condition();
-    Object dest = "FIX";
+    Object dest = "END";
     ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
     expect(")");
     //expect("{");
     Program();
+    jump("START");
+    label("END");
     expect("}");
   }
 
