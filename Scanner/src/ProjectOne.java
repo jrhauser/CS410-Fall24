@@ -134,7 +134,7 @@ public class ProjectOne {
                // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
                // 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54
                // 55 56 57 58 59 60 61 62
-               int accept[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
+               int accept[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
                                1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1,
                                1, 1, 1, 1, 1 };
                System.out.println("Enter a C command:");
@@ -154,6 +154,7 @@ public class ProjectOne {
                        else {
                        	if(l.get(current)!=null) {
                        nextState = fsm[state][l.get(current)];
+                       //System.out.println(nextState);
                        if (i == inputString.length() - 1) {
                                if (nextState != 62) {
                                	if(current!=' '&& current != '\n') {
@@ -161,7 +162,7 @@ public class ProjectOne {
                                	}
                                        state = nextState;
                                        if (accept[state] == 1&&!output.strip().equals("")) {
-                                               if (state == 45) {
+                                               if (state == 45 || state == 18) {
                                                        query.add("Accepted: Class: Identifier Value: "+ output);
                                                        System.out.println("Accepted: Class: Identifier Value: "+ output);
                                                }
@@ -227,7 +228,7 @@ public class ProjectOne {
                                	}
                                	else {
                                		if (accept[state] == 1&&!output.strip().equals("")) {
-                                                if (state == 45) {
+                                                if (state == 45 || state == 18) {
                                                         query.add("Accepted: Class: Identifier Value: "+ output);
                                                         System.out.println("Accepted: Class: Identifier Value: "+ output);
                                                 }
@@ -300,8 +301,10 @@ public class ProjectOne {
                                state = nextState;
                               
                        } else {
+                                //System.out.print(accept[state]);
                                if (accept[state] == 1&&!output.strip().equals("")) {
-                                if (state == 45) {
+                                //System.out.println("here");
+                                if (state == 45 || state == 18) {
                                         query.add("Accepted: Class: Identifier Value: "+ output);
                                         System.out.println("Accepted: Class: Identifier Value: "+ output);
                                 }

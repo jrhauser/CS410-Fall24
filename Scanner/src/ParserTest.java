@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,6 +125,7 @@ public class ParserTest {
       newAtom.add(operand2);
       newAtom.add(result);
       newAtom.add(")");
+      //System.out.println(newAtom);
       atoms.add(newAtom);
   }
   static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest){
@@ -136,6 +138,7 @@ public class ParserTest {
     newAtom.add(cmp);
     newAtom.add(dest);
     newAtom.add(")");
+    //System.out.println(newAtom);
     atoms.add(newAtom);
 }
 
@@ -149,6 +152,7 @@ static void jump(Object dest){
     newAtom.add(" ");
     newAtom.add(dest);
     newAtom.add(")");
+    //System.out.println(newAtom);
     atoms.add(newAtom);
 }
 
@@ -162,6 +166,7 @@ static void label(Object dest){
     newAtom.add(" ");
     newAtom.add(dest);
     newAtom.add(")");
+    //System.out.println(newAtom);
     atoms.add(newAtom);
 }
   
@@ -171,12 +176,13 @@ static void label(Object dest){
   static void Program() {
       currentToken = getNextToken();
       Object nextToken = peekNextToken();
+      //System.out.println(currentToken);
       //Im ignoring for, if, and while cases for now. Uncommenting Declaration() works how youd expect
       
     if(accept("int")||accept("float")) {
         Declaration();
     }
-    else if(currentToken.startsWith("Identifier: ")&&nextToken.equals("=")){
+    else if(currentToken.startsWith("Identifier: ")&&nextToken.equals("=")|| nextToken.equals("+=")||nextToken.equals("-=")){
         Assignment();
     }
     else if (accept("if")) {
@@ -198,16 +204,23 @@ static void label(Object dest){
   }
   
   static void For() {
+    //System.out.println(tokens);
     String instruction = "TST";
     expect("(");
     Declaration();
+    //System.out.println(tokens);
     label("START");
     List<Object> condition = Condition();
     Object dest = "END";
+    //System.out.println(tokens);
     ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+    System.out.println(tokens);
     expect(";");
+    System.out.println(tokens);
     Expression();
+    System.out.println(tokens);
     expect(")");
+    System.out.println(tokens);
     //expect("{");
     Program();
     jump("START");
@@ -288,10 +301,23 @@ static void label(Object dest){
   static void Assignment() {
       String instruction = "MOV";
       Object dest = Name();
-      expect("=");
-      Object source = Value();
+      if (accept("=")) {
+        Object source = Value();
+        expect(";");
+        atom(instruction, source, " ", dest);
+    } else if (accept("+=")) {
+        Object operand2 = Value();
+        atom("ADD", dest, operand2, dest);
+    } else if (accept("-=")){
+        Object operand2 = Value();
+        atom("SUB", dest, operand2, dest);
+    }
+    else{
+
+    }
       expect(";");
-      atom(instruction, source, " ", dest);
+
+
   }
   static void Type() {
       if (accept("int")) {
@@ -334,15 +360,33 @@ static void label(Object dest){
   //ive separated expression into a separate set of functions, need to connect it with declaration somehow
   static Object Expression() {
       Object temp = "temp";
+      //System.out.println(currentToken);
       Object operand1 = Term();
       String instruction = Operator();
-      Object operand2 = Term();
+      Object operand2;
+      if(instruction.equals("++")){
+        System.out.println("here");
+        instruction = "ADD";
+        operand2 = 1;
+        //accept(currentToken);
+        temp = operand1;
+      }
+      else if (instruction.equals("--")){
+        instruction = "SUB";
+        operand2 = 1;
+        //accept(currentToken);
+        temp = operand1;
+      }
+      else {
+        operand2 = Term();
+      }
       atom(instruction, operand1, operand2, temp);
       return "temp";
   }
   
   static Object Term() {
       Object tempValue;
+      System.out.println(currentToken);
       if(currentToken.startsWith("Identifier: ")){
           tempValue = currentToken.substring(12, currentToken.length());
           accept(currentToken);
@@ -371,6 +415,9 @@ static void label(Object dest){
             return "MUL";
         } else if (accept("/")) {
             return "DIV";
+        }
+        else if(accept("++")){
+            return "++";
         }
         //++ and -- cant be here, might drop them entirely
         reject();
