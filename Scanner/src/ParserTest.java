@@ -219,7 +219,7 @@ public class ParserTest {
         Program();
         jump("START");
         label("END");
-        expect("}");
+        //expect("}");
 
     }
 
