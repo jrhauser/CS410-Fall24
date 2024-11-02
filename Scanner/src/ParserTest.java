@@ -5,7 +5,7 @@ import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// Authored by: Joe Hauser, Ethan Sitler, Kate Merrit
+// Authored by: Joe Hauser, Ethan Sitler, Kate Merritt
 // Reviewed bt: Ahmed Mikky and  Juan Zacarias
 public class ParserTest {
     // token list declaration
