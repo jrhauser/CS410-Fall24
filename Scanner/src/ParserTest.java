@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 public class ParserTest {
     // token list declaration
+    private static boolean first = true;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
     // atom list declaration
@@ -170,7 +171,10 @@ public class ParserTest {
 
     // begin the nonterminals
     static void Program() {
+        if(first){
         currentToken = getNextToken();
+        }
+        first = false;
         Object nextToken = peekNextToken();
         // System.out.println(currentToken);
         // Im ignoring for, if, and while cases for now. Uncommenting Declaration()
@@ -178,8 +182,8 @@ public class ParserTest {
 
         if (accept("int") || accept("float")) {
             Declaration();
-        } else if (currentToken.startsWith("Identifier: ") && nextToken.equals("=") || nextToken.equals("+=")
-                || nextToken.equals("-=")) {
+        } else if (currentToken.startsWith("Identifier: ") && (nextToken.equals("=") || nextToken.equals("+=")
+                || nextToken.equals("-="))) {
             Assignment();
         } else if (accept("if")) {
             If();
@@ -215,11 +219,12 @@ public class ParserTest {
         // System.out.println(tokens);
         expect(")");
         // System.out.println(tokens);
-        // expect("{");
+        accept("{");
+        System.out.println(currentToken);
         Program();
         jump("START");
         label("END");
-        //expect("}");
+        accept("}");
 
     }
 
@@ -231,11 +236,13 @@ public class ParserTest {
         Object dest = "END";
         ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
         expect(")");
-        // expect("{");
+        expect("{");
         Program();
         jump("START");
         label("END");
-        // expect("}");
+        System.out.println(currentToken);
+        expect(";");
+        expect("}");
     }
 
     static List<Object> Condition() {
@@ -258,12 +265,13 @@ public class ParserTest {
         Object dest = "ELSE";
         ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
         expect(")");
-        // expect("{");
+        expect("{");
         Program();
         jump("END");
         label("ELSE");
-        expect(";");
         System.out.println(currentToken);
+        System.out.println(currentToken);
+        expect(";");
         expect("}");
         System.out.println(currentToken);
         Else();
@@ -372,7 +380,7 @@ public class ParserTest {
             return token;
 
         } else {
-        System.out.println("here");
+       // System.out.println("here");
         Object operand1 = Term();
         String instruction = Operator();
         Object operand2;
@@ -392,7 +400,7 @@ public class ParserTest {
         }
         atom(instruction, operand1, operand2, temp);
         while(currentToken.equals("+")||currentToken.equals("-")||currentToken.equals("*")||currentToken.equals("/")){
-            System.out.println("here");
+            //System.out.println("here");
             operand1 = temp;
             instruction = Operator();
         if (instruction.equals("++")) {
@@ -417,7 +425,7 @@ public class ParserTest {
 
     static Object Term() {
         Object tempValue;
-        System.out.println(currentToken);
+        //System.out.println(currentToken);
         if (currentToken.startsWith("Identifier: ")) {
             tempValue = currentToken.substring(12, currentToken.length());
             accept(currentToken);
