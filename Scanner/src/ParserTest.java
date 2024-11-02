@@ -5,11 +5,8 @@ import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//Current Problems:
-//  Expression only takes two operands, should be recursive
-//  Need to call Expression() within Declaration() instead of on its own
-//  Prepare for ; to signify a new statement so more than one or two atoms get made ever
-
+// Authored by: Joe Hauser, Ethan Sitler, Kate Merrit
+// Reviewed bt: Ahmed Mikky and  Juan Zacarias
 public class ParserTest {
     // token list declaration
     private static boolean first = true;
@@ -171,8 +168,8 @@ public class ParserTest {
 
     // begin the nonterminals
     static void Program() {
-        if(first){
-        currentToken = getNextToken();
+        if (first) {
+            currentToken = getNextToken();
         }
         first = false;
         Object nextToken = peekNextToken();
@@ -307,13 +304,12 @@ public class ParserTest {
         Object dest = Name();
         if (accept("=")) {
             Object source = Expression();
-            if(accept(";")){
+            if (accept(";")) {
+                atom(instruction, source, " ", dest);
+            } else {
                 atom(instruction, source, " ", dest);
             }
-            else {
-                atom(instruction, source, " ", dest);
-            }
-            
+
         } else if (accept("+=")) {
             Object operand2 = Value();
             atom("ADD", dest, operand2, dest);
@@ -370,62 +366,63 @@ public class ParserTest {
     static Object Expression() {
         Object temp = "temp";
         // System.out.println(currentToken);
-        if (currentToken.startsWith("Integer Literal: ")&&peekNextToken().equals(";")) {
+        if (currentToken.startsWith("Integer Literal: ") && peekNextToken().equals(";")) {
             Object token = currentToken.substring(17);
             accept(currentToken);
             return token;
-        } else if (currentToken.startsWith("Float Literal: ")&&peekNextToken().equals(";")) {
+        } else if (currentToken.startsWith("Float Literal: ") && peekNextToken().equals(";")) {
             Object token = currentToken.substring(15);
             accept(currentToken);
             return token;
 
         } else {
-       // System.out.println("here");
-        Object operand1 = Term();
-        String instruction = Operator();
-        Object operand2;
-        if (instruction.equals("++")) {
             // System.out.println("here");
-            instruction = "ADD";
-            operand2 = 1;
-            // accept(currentToken);
-            temp = operand1;
-        } else if (instruction.equals("--")) {
-            instruction = "SUB";
-            operand2 = 1;
-            // accept(currentToken);
-            temp = operand1;
-        } else {
-            operand2 = Term();
+            Object operand1 = Term();
+            String instruction = Operator();
+            Object operand2;
+            if (instruction.equals("++")) {
+                // System.out.println("here");
+                instruction = "ADD";
+                operand2 = 1;
+                // accept(currentToken);
+                temp = operand1;
+            } else if (instruction.equals("--")) {
+                instruction = "SUB";
+                operand2 = 1;
+                // accept(currentToken);
+                temp = operand1;
+            } else {
+                operand2 = Term();
+            }
+            atom(instruction, operand1, operand2, temp);
+            while (currentToken.equals("+") || currentToken.equals("-") || currentToken.equals("*")
+                    || currentToken.equals("/")) {
+                // System.out.println("here");
+                operand1 = temp;
+                instruction = Operator();
+                if (instruction.equals("++")) {
+                    // System.out.println("here");
+                    instruction = "ADD";
+                    operand2 = 1;
+                    // accept(currentToken);
+                    temp = operand1;
+                } else if (instruction.equals("--")) {
+                    instruction = "SUB";
+                    operand2 = 1;
+                    // accept(currentToken);
+                    temp = operand1;
+                } else {
+                    operand2 = Term();
+                }
+                atom(instruction, operand1, operand2, temp);
+            }
+            return "temp";
         }
-        atom(instruction, operand1, operand2, temp);
-        while(currentToken.equals("+")||currentToken.equals("-")||currentToken.equals("*")||currentToken.equals("/")){
-            //System.out.println("here");
-            operand1 = temp;
-            instruction = Operator();
-        if (instruction.equals("++")) {
-            // System.out.println("here");
-            instruction = "ADD";
-            operand2 = 1;
-            // accept(currentToken);
-            temp = operand1;
-        } else if (instruction.equals("--")) {
-            instruction = "SUB";
-            operand2 = 1;
-            // accept(currentToken);
-            temp = operand1;
-        } else {
-            operand2 = Term();
-        }
-        atom(instruction, operand1, operand2, temp);
-        }
-        return "temp";
-    }
     }
 
     static Object Term() {
         Object tempValue;
-        //System.out.println(currentToken);
+        // System.out.println(currentToken);
         if (currentToken.startsWith("Identifier: ")) {
             tempValue = currentToken.substring(12, currentToken.length());
             accept(currentToken);
