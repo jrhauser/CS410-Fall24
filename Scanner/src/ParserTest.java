@@ -391,6 +391,26 @@ public class ParserTest {
             operand2 = Term();
         }
         atom(instruction, operand1, operand2, temp);
+        while(currentToken.equals("+")||currentToken.equals("-")||currentToken.equals("*")||currentToken.equals("/")){
+            System.out.println("here");
+            operand1 = temp;
+            instruction = Operator();
+        if (instruction.equals("++")) {
+            // System.out.println("here");
+            instruction = "ADD";
+            operand2 = 1;
+            // accept(currentToken);
+            temp = operand1;
+        } else if (instruction.equals("--")) {
+            instruction = "SUB";
+            operand2 = 1;
+            // accept(currentToken);
+            temp = operand1;
+        } else {
+            operand2 = Term();
+        }
+        atom(instruction, operand1, operand2, temp);
+        }
         return "temp";
     }
     }
