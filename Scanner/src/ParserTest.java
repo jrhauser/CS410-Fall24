@@ -191,6 +191,9 @@ public class ParserTest {
         } else {
             Expression();
         }
+        while(!tokens.isEmpty()){
+            Program();
+        }
     }
 
     static void Declaration() {
@@ -238,7 +241,6 @@ public class ParserTest {
         jump("START");
         label("END");
         System.out.println(currentToken);
-        expect(";");
         expect("}");
     }
 
@@ -268,7 +270,6 @@ public class ParserTest {
         label("ELSE");
         System.out.println(currentToken);
         System.out.println(currentToken);
-        expect(";");
         expect("}");
         System.out.println(currentToken);
         Else();
