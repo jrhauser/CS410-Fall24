@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class ParserTest {
     // token list declaration
     private static boolean first = true;
+    private static boolean flag = true;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
     // atom list declaration
@@ -41,7 +42,7 @@ public class ParserTest {
 
         }
         tokens = queryTokens;
-        System.out.println(queryTokens);
+        //System.out.println(queryTokens);
         Program();
 
         System.out.println("valid input");
@@ -106,7 +107,7 @@ public class ParserTest {
 
     static String peekNextToken() {
         if (!tokens.isEmpty()) {
-            return tokens.get(0);
+            return tokens.get(0).toString();
         }
         return "EOI";
     }
@@ -168,11 +169,14 @@ public class ParserTest {
 
     // begin the nonterminals
     static void Program() {
+        flag = true;
         if (first) {
             currentToken = getNextToken();
         }
         first = false;
-        Object nextToken = peekNextToken();
+        String nextToken = peekNextToken();
+        //System.out.println(currentToken);
+        //System.out.println(nextToken);
         // System.out.println(currentToken);
         // Im ignoring for, if, and while cases for now. Uncommenting Declaration()
         // works how youd expect
@@ -188,16 +192,19 @@ public class ParserTest {
             While();
         } else if (accept("for")) {
             For();
-        } else if (nextToken.equals("else")) {
-            System.out.println("here");
-            Else();
+        } else if (accept("}")) {
+            //System.out.println("here");
+            flag = false;
+            //System.out.println(flag);
+            return;
         }
         else {
             Expression();
         }
-        while(!tokens.isEmpty()){
+        //System.out.println(flag);
+        while(!tokens.isEmpty()&&flag){
             System.out.println(tokens);
-            System.out.println(currentToken);
+            //System.out.println(currentToken);
             Program();
         }
     }
@@ -226,11 +233,16 @@ public class ParserTest {
         expect(")");
         // System.out.println(tokens);
         accept("{");
-        System.out.println(currentToken);
+        //System.out.println(currentToken);
         Program();
+        var temp = atoms.get(3);
+        atoms.remove(3);
+        atoms.add(temp);
         jump("START");
         label("END");
         accept("}");
+        
+
 
     }
 
@@ -246,7 +258,7 @@ public class ParserTest {
         Program();
         jump("START");
         label("END");
-        System.out.println(currentToken);
+        //System.out.println(currentToken);
         expect("}");
     }
 
@@ -274,19 +286,18 @@ public class ParserTest {
         Program();
         jump("END");
         label("ELSE");
-        System.out.println(currentToken);
-        System.out.println(currentToken);
-        expect("}");
-        System.out.println(currentToken);
+       // System.out.println(currentToken);
+        //System.out.println(currentToken);
+        //System.out.println(currentToken);
         Else();
         label("END");
 
     }
 
     static void Else() {
-        currentToken = getNextToken();
+        //currentToken = getNextToken();
         if (accept("else")) {
-            accept("{");
+            expect("{");
             Program();
         }
     }
