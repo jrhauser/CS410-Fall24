@@ -188,10 +188,16 @@ public class ParserTest {
             While();
         } else if (accept("for")) {
             For();
-        } else {
+        } else if (nextToken.equals("else")) {
+            System.out.println("here");
+            Else();
+        }
+        else {
             Expression();
         }
         while(!tokens.isEmpty()){
+            System.out.println(tokens);
+            System.out.println(currentToken);
             Program();
         }
     }
@@ -278,7 +284,9 @@ public class ParserTest {
     }
 
     static void Else() {
+        currentToken = getNextToken();
         if (accept("else")) {
+            accept("{");
             Program();
         }
     }
@@ -423,7 +431,7 @@ public class ParserTest {
 
     static Object Term() {
         Object tempValue;
-        // System.out.println(currentToken);
+       //System.out.println(currentToken);
         if (currentToken.startsWith("Identifier: ")) {
             tempValue = currentToken.substring(12, currentToken.length());
             accept(currentToken);
