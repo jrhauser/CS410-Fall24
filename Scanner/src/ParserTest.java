@@ -1,3 +1,4 @@
+import java.awt.Label;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes.Name;
@@ -13,6 +14,7 @@ public class ParserTest {
     private static boolean flag = true;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
+    private static int labelNumber = 0;
     // atom list declaration
     private static List<List<Object>> atoms = new ArrayList<List<Object>>();
     private static ArrayList<String> queryTokens = new ArrayList<>();
@@ -125,7 +127,7 @@ public class ParserTest {
         atoms.add(newAtom);
     }
 
-    static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest) {
+    static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest, int labelNumber) {
         List<Object> newAtom = new ArrayList<Object>();
         newAtom.add("(");
         newAtom.add(instruction);
@@ -133,13 +135,13 @@ public class ParserTest {
         newAtom.add(right);
         newAtom.add(" ");
         newAtom.add(cmp);
-        newAtom.add(dest);
+        newAtom.add(dest.toString() + labelNumber);
         newAtom.add(")");
         // System.out.println(newAtom);
         atoms.add(newAtom);
     }
 
-    static void jump(Object dest) {
+    static void jump(Object dest, int labelNumber) {
         List<Object> newAtom = new ArrayList<Object>();
         newAtom.add("(");
         newAtom.add("JMP");
@@ -147,13 +149,13 @@ public class ParserTest {
         newAtom.add(" ");
         newAtom.add(" ");
         newAtom.add(" ");
-        newAtom.add(dest);
+        newAtom.add(dest.toString() + labelNumber);
         newAtom.add(")");
         // System.out.println(newAtom);
         atoms.add(newAtom);
     }
 
-    static void label(Object dest) {
+    static void label(Object dest, int labelNumber) {
         List<Object> newAtom = new ArrayList<Object>();
         newAtom.add("(");
         newAtom.add("LBL");
@@ -161,7 +163,7 @@ public class ParserTest {
         newAtom.add(" ");
         newAtom.add(" ");
         newAtom.add(" ");
-        newAtom.add(dest);
+        newAtom.add(dest.toString() + labelNumber);
         newAtom.add(")");
         // System.out.println(newAtom);
         atoms.add(newAtom);
@@ -193,9 +195,8 @@ public class ParserTest {
         } else if (accept("for")) {
             For();
         } else if (accept("}")) {
-            //System.out.println("here");
             flag = false;
-            //System.out.println(flag);
+            //System.out.println("here");
             return;
         }
         else {
@@ -220,11 +221,11 @@ public class ParserTest {
         expect("(");
         Declaration();
         // System.out.println(tokens);
-        label("START");
+        label("START", labelNumber);
         List<Object> condition = Condition();
         Object dest = "END";
         // System.out.println(tokens);
-        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         // System.out.println(tokens);
         expect(";");
         // System.out.println(tokens);
@@ -238,28 +239,29 @@ public class ParserTest {
         var temp = atoms.get(3);
         atoms.remove(3);
         atoms.add(temp);
-        jump("START");
-        label("END");
+        jump("START", labelNumber);
+        label("END", labelNumber);
         accept("}");
         
-
+        labelNumber++;
 
     }
 
     static void While() {
-        label("START");
+        label("START", labelNumber);
         String instruction = "TST";
         expect("(");
         List<Object> condition = Condition();
         Object dest = "END";
-        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(")");
         expect("{");
         Program();
-        jump("START");
-        label("END");
+        jump("START", labelNumber);
+        label("END", labelNumber);
         //System.out.println(currentToken);
         expect("}");
+        labelNumber++;
     }
 
     static List<Object> Condition() {
@@ -280,18 +282,18 @@ public class ParserTest {
         expect("(");
         List<Object> condition = Condition();
         Object dest = "ELSE";
-        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(")");
         expect("{");
         Program();
-        jump("END");
-        label("ELSE");
+        jump("END", labelNumber);
+        label("ELSE", labelNumber);
        // System.out.println(currentToken);
         //System.out.println(currentToken);
         //System.out.println(currentToken);
         Else();
-        label("END");
-
+        label("END", labelNumber);
+        labelNumber++;
     }
 
     static void Else() {
