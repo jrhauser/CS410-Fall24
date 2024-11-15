@@ -5,7 +5,6 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 // Authored by: Joe Hauser, Ethan Sitler, Kate Merritt
 // Reviewed bt: Ahmed Mikky and  Juan Zacarias
 public class ParserTest {
@@ -20,7 +19,7 @@ public class ParserTest {
     private static ArrayList<String> queryTokens = new ArrayList<>();
     private static final Pattern textToken = Pattern.compile("Accepted: Class: (\\w+|[+\\-/%*{};=<>!().]+)( [^ V\\n" + //
             "]+)?(?: Value: (\\w+.* *\\w*))*");
-
+    private static String expectedToken;
     public static void main(String args[]) {
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne();
@@ -44,7 +43,13 @@ public class ParserTest {
 
         }
         tokens = queryTokens;
-        Program();
+        try {
+            Program();
+        } catch(IllegalStateException e) {
+            System.out.println("expected: " + expectedToken + " but got: " + currentToken);
+            return;
+        }
+        
 
         System.out.println("valid input");
         for (int i = 0; i < atoms.size(); i++) {
@@ -69,14 +74,15 @@ public class ParserTest {
     }
 
     static void reject() {
-        throw new IllegalStateException("Expected a different token");
+        throw new IllegalStateException("expected a different token");
     }
 
     static boolean expect(String s) {
+        expectedToken = s;
         if (accept(s)) {
             return true;
         }
-        throw new IllegalStateException("Expected a different token");
+        throw new IllegalStateException("expected a different token");
     }
 
     static String getNextToken() {
