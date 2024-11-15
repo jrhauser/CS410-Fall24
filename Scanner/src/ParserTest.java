@@ -44,7 +44,7 @@ public class ParserTest {
 
         }
         tokens = queryTokens;
-        //System.out.println(queryTokens);
+        // System.out.println(queryTokens);
         Program();
 
         System.out.println("valid input");
@@ -175,14 +175,16 @@ public class ParserTest {
         if (first) {
             currentToken = getNextToken();
         }
+        if (currentToken.equals("EOI")) {
+            return;
+        }
         first = false;
         String nextToken = peekNextToken();
-        //System.out.println(currentToken);
-        //System.out.println(nextToken);
+        // System.out.println(currentToken);
+        // System.out.println(nextToken);
         // System.out.println(currentToken);
         // Im ignoring for, if, and while cases for now. Uncommenting Declaration()
         // works how youd expect
-
         if (accept("int") || accept("float")) {
             Declaration();
         } else if (currentToken.startsWith("Identifier: ") && (nextToken.equals("=") || nextToken.equals("+=")
@@ -190,23 +192,15 @@ public class ParserTest {
             Assignment();
         } else if (accept("if")) {
             If();
+            Program();
         } else if (accept("while")) {
             While();
+            Program();
         } else if (accept("for")) {
             For();
-        } else if (accept("}")) {
-            flag = false;
-            //System.out.println("here");
-            return;
-        }
-        else {
-            Expression();
-        }
-        //System.out.println(flag);
-        while(!tokens.isEmpty()&&flag){
-            System.out.println(tokens);
-            //System.out.println(currentToken);
             Program();
+        } else {
+            Expression();
         }
     }
 
@@ -234,7 +228,7 @@ public class ParserTest {
         expect(")");
         // System.out.println(tokens);
         accept("{");
-        //System.out.println(currentToken);
+        // System.out.println(currentToken);
         Program();
         var temp = atoms.get(3);
         atoms.remove(3);
@@ -242,7 +236,7 @@ public class ParserTest {
         jump("START", labelNumber);
         label("END", labelNumber);
         accept("}");
-        
+
         labelNumber++;
 
     }
@@ -259,7 +253,7 @@ public class ParserTest {
         Program();
         jump("START", labelNumber);
         label("END", labelNumber);
-        //System.out.println(currentToken);
+        // System.out.println(currentToken);
         expect("}");
         labelNumber++;
     }
@@ -288,16 +282,17 @@ public class ParserTest {
         Program();
         jump("END", labelNumber);
         label("ELSE", labelNumber);
-       // System.out.println(currentToken);
-        //System.out.println(currentToken);
-        //System.out.println(currentToken);
+        // System.out.println(currentToken);
+        // System.out.println(currentToken);
+        // System.out.println(currentToken);
         Else();
         label("END", labelNumber);
         labelNumber++;
+        expect("}");
     }
 
     static void Else() {
-        //currentToken = getNextToken();
+        // currentToken = getNextToken();
         if (accept("else")) {
             expect("{");
             Program();
@@ -444,7 +439,7 @@ public class ParserTest {
 
     static Object Term() {
         Object tempValue;
-       //System.out.println(currentToken);
+        // System.out.println(currentToken);
         if (currentToken.startsWith("Identifier: ")) {
             tempValue = currentToken.substring(12, currentToken.length());
             accept(currentToken);
@@ -457,8 +452,9 @@ public class ParserTest {
             tempValue = currentToken.substring(15);
             accept(currentToken);
             return tempValue;
+        } else if (currentToken.equals("}")) {
+            return "";
         }
-
         reject();
         return "";
     }
