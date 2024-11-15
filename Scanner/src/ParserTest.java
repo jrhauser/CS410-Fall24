@@ -1,3 +1,4 @@
+import java.awt.Label;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes.Name;
@@ -13,6 +14,7 @@ public class ParserTest {
     private static boolean flag = true;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
+    private static int labelNumber = 0;
     // atom list declaration
     private static List<List<Object>> atoms = new ArrayList<List<Object>>();
     private static ArrayList<String> queryTokens = new ArrayList<>();
@@ -42,7 +44,6 @@ public class ParserTest {
 
         }
         tokens = queryTokens;
-        //System.out.println(queryTokens);
         Program();
 
         System.out.println("valid input");
@@ -56,26 +57,6 @@ public class ParserTest {
             System.out.println("");
         }
 
-        /*
-         * tokens.clear();
-         * atoms.clear();
-         * 
-         * tokens = queryTokens;
-         * System.out.println(tokens);
-         * 
-         * Program();
-         * 
-         * System.out.println("valid input");
-         * for (int i = 0; i < atoms.size(); i++) {
-         * System.out.print(atoms.get(i).get(0));
-         * for (int j = 1; j < atoms.get(i).size() - 2; j++) {
-         * System.out.print(atoms.get(i).get(j) + ", ");
-         * }
-         * System.out.print(atoms.get(i).get(atoms.get(i).size() - 2));
-         * System.out.print(atoms.get(i).get(atoms.get(i).size() - 1));
-         * System.out.println("");
-         * }
-         */
     }
 
     // The necessary simplifiers
@@ -121,11 +102,10 @@ public class ParserTest {
         newAtom.add(operand2);
         newAtom.add(result);
         newAtom.add(")");
-        // System.out.println(newAtom);
         atoms.add(newAtom);
     }
 
-    static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest) {
+    static void ifAtom(String instruction, Object left, Object right, Object cmp, Object dest, int labelNumber) {
         List<Object> newAtom = new ArrayList<Object>();
         newAtom.add("(");
         newAtom.add(instruction);
@@ -133,13 +113,12 @@ public class ParserTest {
         newAtom.add(right);
         newAtom.add(" ");
         newAtom.add(cmp);
-        newAtom.add(dest);
+        newAtom.add(dest.toString() + labelNumber);
         newAtom.add(")");
-        // System.out.println(newAtom);
         atoms.add(newAtom);
     }
 
-    static void jump(Object dest) {
+    static void jump(Object dest, int labelNumber) {
         List<Object> newAtom = new ArrayList<Object>();
         newAtom.add("(");
         newAtom.add("JMP");
@@ -147,13 +126,12 @@ public class ParserTest {
         newAtom.add(" ");
         newAtom.add(" ");
         newAtom.add(" ");
-        newAtom.add(dest);
+        newAtom.add(dest.toString() + labelNumber);
         newAtom.add(")");
-        // System.out.println(newAtom);
         atoms.add(newAtom);
     }
 
-    static void label(Object dest) {
+    static void label(Object dest, int labelNumber) {
         List<Object> newAtom = new ArrayList<Object>();
         newAtom.add("(");
         newAtom.add("LBL");
@@ -161,9 +139,8 @@ public class ParserTest {
         newAtom.add(" ");
         newAtom.add(" ");
         newAtom.add(" ");
-        newAtom.add(dest);
+        newAtom.add(dest.toString() + labelNumber);
         newAtom.add(")");
-        // System.out.println(newAtom);
         atoms.add(newAtom);
     }
 
@@ -173,14 +150,11 @@ public class ParserTest {
         if (first) {
             currentToken = getNextToken();
         }
+        if (currentToken.equals("EOI")) {
+            return;
+        }
         first = false;
         String nextToken = peekNextToken();
-        //System.out.println(currentToken);
-        //System.out.println(nextToken);
-        // System.out.println(currentToken);
-        // Im ignoring for, if, and while cases for now. Uncommenting Declaration()
-        // works how youd expect
-
         if (accept("int") || accept("float")) {
             Declaration();
         } else if (currentToken.startsWith("Identifier: ") && (nextToken.equals("=") || nextToken.equals("+=")
@@ -188,24 +162,15 @@ public class ParserTest {
             Assignment();
         } else if (accept("if")) {
             If();
+            Program();
         } else if (accept("while")) {
             While();
+            Program();
         } else if (accept("for")) {
             For();
-        } else if (accept("}")) {
-            //System.out.println("here");
-            flag = false;
-            //System.out.println(flag);
-            return;
-        }
-        else {
-            Expression();
-        }
-        //System.out.println(flag);
-        while(!tokens.isEmpty()&&flag){
-            System.out.println(tokens);
-            //System.out.println(currentToken);
             Program();
+        } else {
+            Expression();
         }
     }
 
@@ -215,51 +180,48 @@ public class ParserTest {
     }
 
     static void For() {
-        // System.out.println(tokens);
         String instruction = "TST";
         expect("(");
         Declaration();
-        // System.out.println(tokens);
-        label("START");
+        label("START", labelNumber);
         List<Object> condition = Condition();
         Object dest = "END";
-        // System.out.println(tokens);
-        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
-        // System.out.println(tokens);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(";");
-        // System.out.println(tokens);
         Expression();
-        // System.out.println(tokens);
         expect(")");
-        // System.out.println(tokens);
         accept("{");
-        //System.out.println(currentToken);
-        Program();
+        while(!tokens.isEmpty()&&!currentToken.equals("}")){
+            Program();
+        }
+        System.out.println(atoms);
         var temp = atoms.get(3);
         atoms.remove(3);
         atoms.add(temp);
-        jump("START");
-        label("END");
+        jump("START", labelNumber);
+        label("END", labelNumber);
         accept("}");
-        
 
+        labelNumber++;
 
     }
 
     static void While() {
-        label("START");
+        label("START", labelNumber);
         String instruction = "TST";
         expect("(");
         List<Object> condition = Condition();
         Object dest = "END";
-        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(")");
         expect("{");
-        Program();
-        jump("START");
-        label("END");
-        //System.out.println(currentToken);
+        while(!tokens.isEmpty()&&!currentToken.equals("}")){
+            Program();
+        }
+        jump("START", labelNumber);
+        label("END", labelNumber);
         expect("}");
+        labelNumber++;
     }
 
     static List<Object> Condition() {
@@ -271,7 +233,6 @@ public class ParserTest {
         results.add(cmp);
         results.add(right);
         return results;
-
     }
 
     static void If() {
@@ -280,25 +241,27 @@ public class ParserTest {
         expect("(");
         List<Object> condition = Condition();
         Object dest = "ELSE";
-        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest);
+        ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(")");
         expect("{");
-        Program();
-        jump("END");
-        label("ELSE");
-       // System.out.println(currentToken);
-        //System.out.println(currentToken);
-        //System.out.println(currentToken);
+        while(!tokens.isEmpty()&&!currentToken.equals("}")){
+            Program();
+        }
+        expect("}");
+        jump("END", labelNumber);
+        label("ELSE", labelNumber);
         Else();
-        label("END");
-
+        label("END", labelNumber);
+        labelNumber++;
     }
 
     static void Else() {
-        //currentToken = getNextToken();
         if (accept("else")) {
             expect("{");
-            Program();
+            while(!tokens.isEmpty()&&!currentToken.equals("}")){
+                Program();
+            }
+            expect("}");
         }
     }
 
@@ -339,7 +302,6 @@ public class ParserTest {
         } else {
 
         }
-        // expect(";");
 
     }
 
@@ -381,11 +343,8 @@ public class ParserTest {
         return null;
     }
 
-    // ive separated expression into a separate set of functions, need to connect it
-    // with declaration somehow
     static Object Expression() {
         Object temp = "temp";
-        // System.out.println(currentToken);
         if (currentToken.startsWith("Integer Literal: ") && peekNextToken().equals(";")) {
             Object token = currentToken.substring(17);
             accept(currentToken);
@@ -396,20 +355,16 @@ public class ParserTest {
             return token;
 
         } else {
-            // System.out.println("here");
             Object operand1 = Term();
             String instruction = Operator();
             Object operand2;
             if (instruction.equals("++")) {
-                // System.out.println("here");
                 instruction = "ADD";
                 operand2 = 1;
-                // accept(currentToken);
                 temp = operand1;
             } else if (instruction.equals("--")) {
                 instruction = "SUB";
                 operand2 = 1;
-                // accept(currentToken);
                 temp = operand1;
             } else {
                 operand2 = Term();
@@ -417,19 +372,15 @@ public class ParserTest {
             atom(instruction, operand1, operand2, temp);
             while (currentToken.equals("+") || currentToken.equals("-") || currentToken.equals("*")
                     || currentToken.equals("/")) {
-                // System.out.println("here");
                 operand1 = temp;
                 instruction = Operator();
                 if (instruction.equals("++")) {
-                    // System.out.println("here");
                     instruction = "ADD";
                     operand2 = 1;
-                    // accept(currentToken);
                     temp = operand1;
                 } else if (instruction.equals("--")) {
                     instruction = "SUB";
                     operand2 = 1;
-                    // accept(currentToken);
                     temp = operand1;
                 } else {
                     operand2 = Term();
@@ -442,7 +393,6 @@ public class ParserTest {
 
     static Object Term() {
         Object tempValue;
-       //System.out.println(currentToken);
         if (currentToken.startsWith("Identifier: ")) {
             tempValue = currentToken.substring(12, currentToken.length());
             accept(currentToken);
@@ -455,8 +405,9 @@ public class ParserTest {
             tempValue = currentToken.substring(15);
             accept(currentToken);
             return tempValue;
+        } else if (currentToken.equals("}")) {
+            return "";
         }
-
         reject();
         return "";
     }
@@ -478,7 +429,6 @@ public class ParserTest {
         } else if (accept("++")) {
             return "++";
         }
-        // ++ and -- cant be here, might drop them entirely
         reject();
         return "";
     }
