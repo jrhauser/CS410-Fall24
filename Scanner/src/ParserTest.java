@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class ParserTest {
     // token list declaration
     private static boolean first = true;
+    private static boolean loop = false;
     private static boolean flag = true;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
@@ -179,6 +180,9 @@ public class ParserTest {
             Expression();
             Program();
         }
+        if(!tokens.isEmpty()&&!loop){
+            Program();
+        }
     }
 
     static void Declaration() {
@@ -187,6 +191,7 @@ public class ParserTest {
     }
 
     static void For() {
+        loop = true;
         String instruction = "TST";
         expect("(");
         Declaration();
@@ -201,19 +206,20 @@ public class ParserTest {
         while(!tokens.isEmpty()&&!currentToken.equals("}")){
             Program();
         }
-        System.out.println(atoms);
         var temp = atoms.get(3);
         atoms.remove(3);
         atoms.add(temp);
         jump("START", labelNumber);
         label("END", labelNumber);
         accept("}");
+        loop = false;
 
         labelNumber++;
 
     }
 
     static void While() {
+        loop = true;
         label("START", labelNumber);
         String instruction = "TST";
         expect("(");
@@ -228,6 +234,7 @@ public class ParserTest {
         jump("START", labelNumber);
         label("END", labelNumber);
         expect("}");
+        loop = false;
         labelNumber++;
     }
 
@@ -243,6 +250,7 @@ public class ParserTest {
     }
 
     static void If() {
+        loop = true;
         String instruction = "TST";
         accept("if");
         expect("(");
@@ -259,16 +267,19 @@ public class ParserTest {
         label("ELSE", labelNumber);
         Else();
         label("END", labelNumber);
+        loop = false;
         labelNumber++;
     }
 
     static void Else() {
+        loop = true;
         if (accept("else")) {
             expect("{");
             while(!tokens.isEmpty()&&!currentToken.equals("}")){
                 Program();
             }
             expect("}");
+            loop = false;
         }
     }
 
