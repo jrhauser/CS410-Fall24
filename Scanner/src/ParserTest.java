@@ -177,6 +177,7 @@ public class ParserTest {
             Program();
         } else {
             Expression();
+            Program();
         }
     }
 
