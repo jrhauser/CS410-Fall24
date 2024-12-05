@@ -1,17 +1,14 @@
-import java.awt.Label;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Attributes.Name;
-import java.util.jar.Attributes.Name;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 // Authored by: Joe Hauser, Ethan Sitler, Kate Merritt
 // Reviewed bt: Ahmed Mikky and  Juan Zacarias
-public class ParserTest {
+public class ParserPart2 {
     // token list declaration
     private static boolean first = true;
     private static boolean loop = false;
-    private static boolean flag = true;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
     private static int labelNumber = 0;
@@ -21,6 +18,7 @@ public class ParserTest {
     private static final Pattern textToken = Pattern.compile("Accepted: Class: (\\w+|[+\\-/%*{};=<>!().]+)( [^ V\\n" + //
             "]+)?(?: Value: (\\w+.* *\\w*))*");
     private static String expectedToken;
+
     public static void main(String args[]) {
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne();
@@ -46,11 +44,10 @@ public class ParserTest {
         tokens = queryTokens;
         try {
             Program();
-        } catch(IllegalStateException e) {
+        } catch (IllegalStateException e) {
             System.out.println("expected: " + expectedToken + " but got: " + currentToken);
             return;
         }
-        
 
         System.out.println("valid input");
         for (int i = 0; i < atoms.size(); i++) {
@@ -153,7 +150,6 @@ public class ParserTest {
 
     // begin the nonterminals
     static void Program() {
-        flag = true;
         if (first) {
             currentToken = getNextToken();
         }
@@ -180,7 +176,7 @@ public class ParserTest {
             Expression();
             Program();
         }
-        if(!tokens.isEmpty()&&!loop){
+        if (!tokens.isEmpty() && !loop) {
             Program();
         }
     }
@@ -203,7 +199,7 @@ public class ParserTest {
         Expression();
         expect(")");
         accept("{");
-        while(!tokens.isEmpty()&&!currentToken.equals("}")){
+        while (!tokens.isEmpty() && !currentToken.equals("}")) {
             Program();
         }
         var temp = atoms.get(3);
@@ -228,7 +224,7 @@ public class ParserTest {
         ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(")");
         expect("{");
-        while(!tokens.isEmpty()&&!currentToken.equals("}")){
+        while (!tokens.isEmpty() && !currentToken.equals("}")) {
             Program();
         }
         jump("START", labelNumber);
@@ -259,7 +255,7 @@ public class ParserTest {
         ifAtom(instruction, condition.get(0), condition.get(2), condition.get(1), dest, labelNumber);
         expect(")");
         expect("{");
-        while(!tokens.isEmpty()&&!currentToken.equals("}")){
+        while (!tokens.isEmpty() && !currentToken.equals("}")) {
             Program();
         }
         expect("}");
@@ -275,7 +271,7 @@ public class ParserTest {
         loop = true;
         if (accept("else")) {
             expect("{");
-            while(!tokens.isEmpty()&&!currentToken.equals("}")){
+            while (!tokens.isEmpty() && !currentToken.equals("}")) {
                 Program();
             }
             expect("}");
