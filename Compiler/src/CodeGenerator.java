@@ -119,4 +119,78 @@ public class CodeGenerator {
         code.add(bits.toString());
     }
 
+    private void jmpAtom(ArrayList<Object> atom){
+        BitSet bits = new BitSet();
+        // Gen CMP 0110
+        bits.set(1, 2);
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 7);
+        }
+        for (int i = 20; i > 0; i--) {
+            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
+                bits.set(i + 31);
+        }
+        code.add(bits.toString());
+        bits.clear();
+
+        // Gen JMP 0101
+        bits.set(1);
+        bits.set(3);
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 7);
+        }
+        for (int i = 20; i > 0; i--) {
+            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
+                bits.set(i + 31);
+        }
+        code.add(bits.toString());
+
+    }
+
+    private void movAtom(ArrayList<Object> atom){
+        BitSet bits = new BitSet();
+        // Gen LOD 0111
+        bits.set(1, 3);
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 7);
+        }
+
+        // Register r
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 11);
+        }
+
+        // Memory
+        for (int i = 20; i > 0; i--) {
+            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
+                bits.set(i + 31);
+        }
+
+        code.add(bits.toString());
+        bits.clear();
+
+        // Gen STO 1000
+        bits.set(0);
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 7);
+        }
+
+        // Register r
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 11);
+        }
+
+        // Memory
+        for (int i = 20; i > 0; i--) {
+            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
+                bits.set(i + 31);
+        }
+        code.add(bits.toString());
+    }
 }
