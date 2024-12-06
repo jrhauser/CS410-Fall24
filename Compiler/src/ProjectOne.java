@@ -269,14 +269,14 @@ public class ProjectOne {
                 int accept[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
                                 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1,
                                 1, 1, 1, 1, 1 };
-                String inputString = readFile(Path.of("Scanner/code/example1.txt"));
+                String inputString = readFile(Path.of("Compiler\\code\\example1.txt"));
                 int state = 0;
                 char current;
                 int nextState = 0;
                 var output = "";
                 for (int i = 0; i < inputString.length(); i++) {
                         current = inputString.charAt(i);
-                        if (current == '\\') {
+                        if (current == '\\' || (Character.isWhitespace(current)&& current != ' ')) {
                                 current = '\n';
                                 nextState = 62;
                                 i += 2;
