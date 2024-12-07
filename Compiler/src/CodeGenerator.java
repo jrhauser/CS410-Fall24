@@ -263,4 +263,15 @@ public class CodeGenerator {
         code.add("0" + Integer.toBinaryString(bitList));
     }
 
+
+    public static void halt(){
+        Integer bitList = 0;
+        int opCode = 9; //HLT
+        bitList += (opCode << 28); 
+        bitList += (0 << 24); //cmp = 0000
+        bitList += (0<<4); //maybe no needed
+        bitList += (0<<20); //maybe not needed
+        code.add(Integer.toBinaryString(bitList));
+    }
+
 }
