@@ -246,14 +246,14 @@ public class CodeGenerator {
         }
         code.add(bits.toString());
     }
-    
-    public static void loadWord(String idOrReg){
-        Integer bitList;
-        int opcode = 7; //LOD
+
+    public static void loadWord(String identifier){
+        Integer bitList = 0;
+        int opCode = 7; //LOD
         bitList += (opCode << 28); //opcode = 0111
         bitList += (0 << 24); //cmp = 0000
-        bitList += (labelTable.get(idOrReg) << 20); //r1 = (ADD, ___ ,   ,   )
+        bitList += (labelTable.get(identifier) << 20); //r1 = (ADD, ___ ,   ,   )
         bitList += (reg); //memory register
-        code.add(Integer.toBinaryString(bitList));
+        code.add("0"+Integer.toBinaryString(bitList));
     }
 }
