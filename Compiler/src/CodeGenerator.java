@@ -90,7 +90,10 @@ public class CodeGenerator {
     }
 
     public static void addAtom(List<Object> atom) {
-        BitSet bits = new BitSet();
+        loadWord(atom.get(2).toString()); //lw first number
+        loadWord(atom.get(3).toString()); //lw second number
+
+        BitSet bits = new BitSet(); //add instruction
         bits.set(3);
         for (int i = 4; i > 0; i--) {
             if ((reg >> i & 1) == 1)
@@ -105,6 +108,9 @@ public class CodeGenerator {
     }
 
     public static void subAtom(List<Object> atom) {
+        loadWord(atom.get(2).toString()); //lw first number
+        loadWord(atom.get(3).toString()); //lw second number
+
         BitSet bits = new BitSet();
         bits.set(2); // 0010
         for (int i = 4; i > 0; i--) {
@@ -119,6 +125,9 @@ public class CodeGenerator {
     }
 
     public static void mulAtom(List<Object> atom) {
+        loadWord(atom.get(2).toString()); //lw first number
+        loadWord(atom.get(3).toString()); //lw second number
+
         BitSet bits = new BitSet();
         bits.set(2, 3); // 0011
         for (int i = 4; i > 0; i--) {
@@ -133,6 +142,9 @@ public class CodeGenerator {
     }
 
     public static void divAtom(List<Object> atom) {
+        loadWord(atom.get(2).toString()); //lw first number
+        loadWord(atom.get(3).toString()); //lw second number
+        
         BitSet bits = new BitSet();
         bits.set(1); // 0100
         for (int i = 4; i > 0; i--) {
