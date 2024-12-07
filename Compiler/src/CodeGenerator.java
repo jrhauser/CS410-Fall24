@@ -51,68 +51,42 @@ public class CodeGenerator {
     public static void buildLabels(List<List<Object>> atoms) {
         for (var atom : atoms) {
             if (atom.get(1).equals("LBL")) {
-                labelTable.put((String) atom.get(6), pc);
+                labelTable.put(atom.get(6).toString(), pc);
             } else if (atom.get(1).equals("MOV")) {
-                labelTable.put((String) atom.get(5), mem);
+                labelTable.put(atom.get(5).toString(), mem);
                 mem += 8;
                 pc += 2;
             } else if (atom.get(1).equals("JMP")) {
                 pc += 2;
             } else if (atom.get(1).equals("TST")) {
-                labelTable.put((String) atom.get(2), mem += 8);
-                labelTable.put((String) atom.get(3), mem += 8);
+                labelTable.put(atom.get(2).toString(), mem += 8);
+                labelTable.put(atom.get(3).toString(), mem += 8);
                 pc += 3;
             } else {
-                labelTable.put((String) atom.get(2), mem += 8);
-                labelTable.put((String) atom.get(3), mem += 8);
-                labelTable.put((String) atom.get(4), mem += 8);
+                labelTable.put(atom.get(2).toString(), mem += 8);
+                labelTable.put(atom.get(3).toString(), mem += 8);
+                labelTable.put(atom.get(4).toString(), mem += 8);
                 pc += 3;
             }
         }
     }
 
     private static void tstAtom(List<Object> atom) {
-        BitSet bits = new BitSet();
-        bits.set(1, 3); // 0111
-        for (int i = 4; i > 0; i--) {
-            if ((reg >> i & 1) == 1)
-                bits.set(i + 7);
-        }
-        // setting 20 bits for s2
-        for (int i = 20; i > 0; i--) {
-            if ((labelTable.get(atom.get(1)) >> i & 1) == 1)
-                bits.set(i + 31);
-        }
-        code.add(bits.toString());
-        bits.clear();
-        bits.set(1, 2); // 0110
-        for (int i = 3; i > 0; i--) {
-            if (((int) atom.get(4) >> i & 1) == 1)
-                bits.set(i + 4);
-        }
-        for (int i = 4; i > 0; i--) {
-            if ((reg >> i & 1) == 1)
-                bits.set(i + 7);
-        }
-        // setting 20 bits for s2
-        for (int i = 20; i > 0; i--) {
-            if ((labelTable.get(atom.get(5)) >> i & 1) == 1)
-                bits.set(i + 31);
-        }
-        code.add(bits.toString());
-        bits.clear();
-        bits.set(1);
-        bits.set(3); // 0101
-        for (int i = 4; i > 0; i--) {
-            if ((reg >> i & 1) == 1)
-                bits.set(i + 7);
-        }
-        // setting 20 bits for s2
-        for (int i = 20; i > 0; i--) {
-            if ((labelTable.get(atom.get(3)) >> i & 1) == 1)
-                bits.set(i + 31);
-        }
-        code.add(bits.toString());
+        loadWord(atom.get(2).toString());
+        Integer bitList = 0;
+        int opCode = 6; // LOD
+        bitList += (opCode << 28); // opcode = 0111
+        bitList += (Integer.parseInt(atom.get(5).toString()) << 24); // cmp = comparison number
+        bitList += (reg);
+        bitList += (labelTable.get(atom.get(3)) << 20);
+        code.add("0" + Integer.toBinaryString(bitList));
+        bitList = 0;
+        opCode = 5;
+        bitList += (opCode << 28); // opcode = 0101
+        bitList += (Integer.parseInt(atom.get(5).toString()) << 24); // cmp = 0000
+        bitList += (reg);
+        bitList += (labelTable.get(atom.get(3)) << 20);
+        jmp(atom.get(6).toString());
     }
 
     public static void addAtom(List<Object> atom) {
@@ -247,13 +221,34 @@ public class CodeGenerator {
         code.add(bits.toString());
     }
 
-    public static void loadWord(String identifier){
+    public static void loadWord(String identifier) {
         Integer bitList = 0;
-        int opCode = 7; //LOD
-        bitList += (opCode << 28); //opcode = 0111
-        bitList += (0 << 24); //cmp = 0000
-        bitList += (labelTable.get(identifier) << 20); //r1 = (ADD, ___ ,   ,   )
-        bitList += (reg); //memory register
-        code.add("0"+Integer.toBinaryString(bitList));
+        int opCode = 7; // LOD
+        bitList += (opCode << 28); // opcode = 0111
+        bitList += (0 << 24); // cmp = 0000
+        bitList += (reg);
+        bitList += (labelTable.get(identifier) << 20); // r1 = (ADD, ___ , , )
+        // memory register
+        code.add("0" + Integer.toBinaryString(bitList));
     }
+
+    private static void storeWord(String identifier) {
+        Integer bitList = 0;
+        int opCode = 8; // LOD
+        bitList += (opCode << 28); // opcode = 1000
+        bitList += (0 << 24); // cmp = 0000
+        bitList += (reg);
+        bitList += (labelTable.get(identifier) << 20); // memory
+        code.add(Integer.toBinaryString(bitList));
+    }
+
+    private static void jmp(String label) {
+        Integer bitList = 0;
+        int opCode = 5; // JMP
+        bitList += (opCode << 28); // opcode = 0101
+        bitList += (0 << 24); // cmp = 0000
+        bitList += (labelTable.get(label) << 20); // memory
+        code.add("0" + Integer.toBinaryString(bitList));
+    }
+
 }
