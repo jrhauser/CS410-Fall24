@@ -92,7 +92,7 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 0001
         bitList += (0 << 24); // cmp = 0
         bitList += (reg);
-        bitList += (labelTable.get(atom.get(3)) << 20);
+        bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("000" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
     }
@@ -104,7 +104,7 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 0010
         bitList += (0 << 24); // cmp = 0
         bitList += (reg);
-        bitList += (labelTable.get(atom.get(3)) << 20);
+        bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("00" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
     }
@@ -116,7 +116,7 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 0011
         bitList += (0 << 24); // cmp = 0
         bitList += (reg);
-        bitList += (labelTable.get(atom.get(3)) << 20);
+        bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("00" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
     }
@@ -128,7 +128,7 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 0100
         bitList += (0 << 24); // cmp = 0
         bitList += (reg);
-        bitList += (labelTable.get(atom.get(3)) << 20);
+        bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("0" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
     }
@@ -179,14 +179,13 @@ public class CodeGenerator {
         code.add("0" + Integer.toBinaryString(bitList));
     }
 
-
-    public static void halt(){
+    public static void halt() {
         Integer bitList = 0;
-        int opCode = 9; //HLT
-        bitList += (opCode << 28); 
-        bitList += (0 << 24); //cmp = 0000
-        bitList += (0<<4); //maybe no needed
-        bitList += (0<<20); //maybe not needed
+        int opCode = 9; // HLT
+        bitList += (opCode << 28);
+        bitList += (0 << 24); // cmp = 0000
+        bitList += (0 << 4); // maybe no needed
+        bitList += (0 << 20); // maybe not needed
         code.add(Integer.toBinaryString(bitList));
     }
 
