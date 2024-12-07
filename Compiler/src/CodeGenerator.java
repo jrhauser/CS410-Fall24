@@ -20,75 +20,58 @@ public class CodeGenerator {
 
     public static void codeGen(List<List<Object>> atoms) {
         buildLabels(atoms);
-        for(var atom: atoms){
-            if(atom.get(1).equals("TST")) {
+        for (var atom : atoms) {
+            if (atom.get(1).equals("TST")) {
                 tstAtom(atom);
-            }
-            else if (atom.get(1).equals("ADD")) {
+            } else if (atom.get(1).equals("ADD")) {
                 addAtom(atom);
 
-            }
-            else if (atom.get(1).equals("SUB")) {
+            } else if (atom.get(1).equals("SUB")) {
                 subAtom(atom);
-                
-            }
-            else if (atom.get(1).equals("MUL")) {
+
+            } else if (atom.get(1).equals("MUL")) {
                 mulAtom(atom);
-                
-            }
-            else if (atom.get(1).equals("DIV")) {
+
+            } else if (atom.get(1).equals("DIV")) {
                 divAtom(atom);
-                
-            }
-            else if (atom.get(1).equals("JMP")) {
+
+            } else if (atom.get(1).equals("JMP")) {
                 jmpAtom(atom);
-                
-            }
-            else if (atom.get(1).equals("MOV")) {
+
+            } else if (atom.get(1).equals("MOV")) {
                 movAtom(atom);
-                
-            }
-            else {
-                //ADD LBL when done
+
+            } else {
+                // ADD LBL when done
             }
             System.out.println(code);
         }
     }
 
     public static void buildLabels(List<List<Object>> atoms) {
-        if (firstPass){
         for (var atom : atoms) {
             if (atom.get(1).equals("LBL")) {
-                labelTable.put((String) atom.get(6),mem);
+                labelTable.put((String) atom.get(6), pc);
             } else if (atom.get(1).equals("MOV")) {
                 labelTable.put((String) atom.get(5), mem);
                 mem += 8;
                 pc += 2;
             } else if (atom.get(1).equals("JMP")) {
-                labelTable.put((String) atom.get(6), mem);
-                mem += 4;
                 pc += 2;
             } else if (atom.get(1).equals("TST")) {
-                labelTable.put((String) atom.get(6), mem);
-                mem += 8;
-                pc += 2;
-            }
-            else if (atom.get(1).equals("CMP")) {
-                labelTable.put((String) atom.get(6), mem);
-                mem += 8;
-                pc += 2;
-            }
-             else {
-                labelTable.put((String) atom.get(5), mem);
-                mem += 16;
+                labelTable.put((String) atom.get(2), mem += 8);
+                labelTable.put((String) atom.get(3), mem += 8);
+                pc += 3;
+            } else {
+                labelTable.put((String) atom.get(2), mem += 8);
+                labelTable.put((String) atom.get(3), mem += 8);
+                labelTable.put((String) atom.get(4), mem += 8);
                 pc += 3;
             }
         }
     }
-    else {}
-    }
 
-    public static void tstAtom(List<Object> atom) {
+    private static void tstAtom(List<Object> atom) {
         BitSet bits = new BitSet();
         bits.set(1, 3); // 0111
         for (int i = 4; i > 0; i--) {
@@ -97,13 +80,29 @@ public class CodeGenerator {
         }
         // setting 20 bits for s2
         for (int i = 20; i > 0; i--) {
-            if ((labelTable.get(atom.get(3)) >> i & 1) == 1)
+            if ((labelTable.get(atom.get(1)) >> i & 1) == 1)
                 bits.set(i + 31);
         }
         code.add(bits.toString());
         bits.clear();
         bits.set(1, 2); // 0110
-
+        for (int i = 3; i > 0; i--) {
+            if (((int) atom.get(4) >> i & 1) == 1)
+                bits.set(i + 4);
+        }
+        for (int i = 4; i > 0; i--) {
+            if ((reg >> i & 1) == 1)
+                bits.set(i + 7);
+        }
+        // setting 20 bits for s2
+        for (int i = 20; i > 0; i--) {
+            if ((labelTable.get(atom.get(5)) >> i & 1) == 1)
+                bits.set(i + 31);
+        }
+        code.add(bits.toString());
+        bits.clear();
+        bits.set(1);
+        bits.set(3); // 0101
         for (int i = 4; i > 0; i--) {
             if ((reg >> i & 1) == 1)
                 bits.set(i + 7);
@@ -173,7 +172,7 @@ public class CodeGenerator {
         code.add(bits.toString());
     }
 
-    public static void jmpAtom(List<Object> atom){
+    public static void jmpAtom(List<Object> atom) {
         BitSet bits = new BitSet();
         // Gen CMP 0110
         bits.set(1, 2);
@@ -203,7 +202,7 @@ public class CodeGenerator {
 
     }
 
-    public static void movAtom(List<Object> atom){
+    public static void movAtom(List<Object> atom) {
         BitSet bits = new BitSet();
         // Gen LOD 0111
         bits.set(1, 3);
@@ -220,7 +219,7 @@ public class CodeGenerator {
 
         // Memory
         for (int i = 20; i > 0; i--) {
-            if (labelTable.get((String) atom.get(3))!=null&&((labelTable.get((String) atom.get(3)) >> i & 1) == 1))
+            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
                 bits.set(i + 31);
         }
 
@@ -242,7 +241,7 @@ public class CodeGenerator {
 
         // Memory
         for (int i = 20; i > 0; i--) {
-            if (labelTable.get((String) atom.get(3))!=null&&((labelTable.get((String) atom.get(3)) >> i & 1) == 1))
+            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
                 bits.set(i + 31);
         }
         code.add(bits.toString());
