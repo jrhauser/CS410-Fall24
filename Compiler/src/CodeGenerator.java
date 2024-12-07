@@ -61,16 +61,25 @@ public class CodeGenerator {
             if (atom.get(1).equals("LBL")) {
                 labelTable.put((String) atom.get(6),mem);
             } else if (atom.get(1).equals("MOV")) {
-                //labelTable.put((String) atom.get(5), mem);
+                labelTable.put((String) atom.get(5), mem);
                 mem += 8;
                 pc += 2;
             } else if (atom.get(1).equals("JMP")) {
+                labelTable.put((String) atom.get(6), mem);
                 mem += 4;
                 pc += 2;
             } else if (atom.get(1).equals("TST")) {
+                labelTable.put((String) atom.get(6), mem);
                 mem += 8;
                 pc += 2;
-            } else {
+            }
+            else if (atom.get(1).equals("CMP")) {
+                labelTable.put((String) atom.get(6), mem);
+                mem += 8;
+                pc += 2;
+            }
+             else {
+                labelTable.put((String) atom.get(5), mem);
                 mem += 16;
                 pc += 3;
             }
@@ -211,7 +220,7 @@ public class CodeGenerator {
 
         // Memory
         for (int i = 20; i > 0; i--) {
-            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
+            if (labelTable.get((String) atom.get(3))!=null&&((labelTable.get((String) atom.get(3)) >> i & 1) == 1))
                 bits.set(i + 31);
         }
 
@@ -233,7 +242,7 @@ public class CodeGenerator {
 
         // Memory
         for (int i = 20; i > 0; i--) {
-            if ((labelTable.get((String) atom.get(3)) >> i & 1) == 1)
+            if (labelTable.get((String) atom.get(3))!=null&&((labelTable.get((String) atom.get(3)) >> i & 1) == 1))
                 bits.set(i + 31);
         }
         code.add(bits.toString());
