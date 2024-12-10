@@ -3,11 +3,16 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.lang.Math;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class CodeGenerator {
     static HashMap<String, Integer> labelTable = new HashMap<>();
-    static int pc = 2000;
-    static int mem = 4000;
+    static int pc = 0;
+    static int mem = 20;
     static int reg = 1;
     static ArrayList<String> code = new ArrayList<>();
     static boolean firstPass = true;
@@ -41,11 +46,32 @@ public class CodeGenerator {
             } else if (atom.get(1).equals("MOV")) {
                 movAtom(atom);
 
-            } else {
-                // ADD LBL when done
             }
-            System.out.println(code);
         }
+        halt();
+        System.out.println(code);
+
+        try (FileWriter writer = new FileWriter("bitOutput.txt")) {
+            for (var item : code){
+                writer.write(item.substring(0,8)+"/");
+                writer.write(item.substring(8,16)+"/");
+                writer.write(item.substring(16,24)+"/");
+                writer.write(item.substring(24,32)+"/");
+                writer.write(" "+(item.length())+"\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try (FileOutputStream writer = new FileOutputStream("bitOutput.bin")) {
+            for (var item : code){
+                byte[] bval = new BigInteger(item, 2).toByteArray();
+                writer.write(bval);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void buildLabels(List<List<Object>> atoms) {
@@ -90,9 +116,8 @@ public class CodeGenerator {
         Integer bitList = 0;
         int opCode = 1; // ADD
         bitList += (opCode << 28); // opcode = 0001
-        bitList += (0 << 24); // cmp = 0
-        bitList += (reg);
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
+        bitList += (reg);
         code.add("000" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
     }
