@@ -5,6 +5,7 @@ import java.util.List;
 import java.lang.Math;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,7 +58,6 @@ public class CodeGenerator {
                 writer.write(item.substring(8,16)+"/");
                 writer.write(item.substring(16,24)+"/");
                 writer.write(item.substring(24,32)+"/");
-                writer.write(" "+(item.length())+"\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,8 +65,14 @@ public class CodeGenerator {
         
         try (FileOutputStream writer = new FileOutputStream("bitOutput.bin")) {
             for (var item : code){
-                byte[] bval = new BigInteger(item, 2).toByteArray();
-                writer.write(bval);
+                for (int i = 0; i < item.length(); i += 8) {
+                    // Extract 8-bit substring
+                    String byte_string = item.substring(i, i + 8);
+                    // Convert 8-bit binary string to byte
+                    int byte_value = Integer.parseInt(byte_string, 2);
+                    // Write the byte
+                    writer.write(byte_value);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
