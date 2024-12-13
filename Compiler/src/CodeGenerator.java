@@ -21,11 +21,13 @@ public class CodeGenerator {
     private static List<List<Object>> atoms = new ArrayList<List<Object>>();
 
     public static void main(String args[]) {
-        atoms = ParserPart2.parser();
-        codeGen(atoms);
+        String input_file = args[0];
+        String output_file = args[1];
+        atoms = ParserPart2.parser(input_file, output_file);
+        codeGen(atoms, input_file, output_file);
     }
 
-    public static void codeGen(List<List<Object>> atoms) {
+    public static void codeGen(List<List<Object>> atoms, String input_file, String output_file) {
         buildLabels(atoms);
         for (var atom : atoms) {
             if (atom.get(1).equals("TST")) {
@@ -51,7 +53,7 @@ public class CodeGenerator {
             }
         }
         halt();
-        try (FileWriter writer = new FileWriter("bitOutput.txt")) {
+        try (FileWriter writer = new FileWriter(output_file)) {
             for (var item : code) {
                 writer.write(item.substring(0, 8) + "/");
                 writer.write(item.substring(8, 16) + "/");
