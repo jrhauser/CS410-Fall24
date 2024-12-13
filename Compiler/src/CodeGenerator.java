@@ -1,12 +1,11 @@
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.lang.Math;
-import java.math.BigInteger;
-import java.nio.file.Files;
-import java.io.DataOutputStream;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,21 +52,40 @@ public class CodeGenerator {
         }
         halt();
         System.out.println(code);
-
+        System.out.println(labelTable);
         try (FileWriter writer = new FileWriter("bitOutput.txt")) {
-            for (var item : code){
-                writer.write(item.substring(0,8)+"/");
-                writer.write(item.substring(8,16)+"/");
-                writer.write(item.substring(16,24)+"/");
-                writer.write(item.substring(24,32)+"/");
+            for (var item : code) {
+                writer.write(item.substring(0, 8) + "/");
+                writer.write(item.substring(8, 16) + "/");
+                writer.write(item.substring(16, 24) + "/");
+                writer.write(item.substring(24, 32) + "/");
                 writer.write("\n");
             }
-            for (int i = pc; i < INITIAL_MEM; i++) {
-                writer.write("00000000000000000000000000000000\n");
+            for (int i = pc + 2; i < INITIAL_MEM; i++) {
+                writer.write("00000000/00000000/00000000/00000000/\n");
             }
-            for (Map.Entry<String, Integer> label : labelTable.entrySet()) {
-                if (label.getKey().startsWith("START") || label.getKey().startsWith("END") || label.getKey().startsWith("END")) {
-                    
+            for (int i = 0; i < 200; i++) {
+                if (labelTable.containsValue(i)) {
+                    var key = getKeyByValue(labelTable, i);
+                    if (key.matches("\\d+")) {
+                        String binString = String.format("%32s",
+                                Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
+                        writer.write(binString.substring(0, 8) + "/");
+                        writer.write(binString.substring(8, 16) + "/");
+                        writer.write(binString.substring(16, 24) + "/");
+                        writer.write(binString.substring(24, 32) + "/");
+                        writer.write("\n");
+                    } else {
+                        String binString = String.format("%32s",
+                                Integer.toBinaryString(labelTable.get(key))).replace(' ', '0');
+                        writer.write(binString.substring(0, 8) + "/");
+                        writer.write(binString.substring(8, 16) + "/");
+                        writer.write(binString.substring(16, 24) + "/");
+                        writer.write(binString.substring(24, 32) + "/");
+                        writer.write("\n");
+                    }
+                } else {
+                    writer.write("00000000/00000000/00000000/00000000/\n");
                 }
             }
         } catch (IOException e) {
@@ -75,23 +93,47 @@ public class CodeGenerator {
         }
 
         try (FileOutputStream writer = new FileOutputStream("bitOutput.bin")) {
-            for (var item : code){
+            for (var item : code) {
                 for (int i = 0; i < item.length(); i += 8) {
-                    // Extract 8-bit substring
                     String byte_string = item.substring(i, i + 8);
-                    // Convert 8-bit binary string to byte
                     int byte_value = Integer.parseInt(byte_string, 2);
-                    // Write the byte
                     writer.write(byte_value);
                 }
             }
             String nothing = "00000000000000000000000000000000";
-            for (int i = pc; i < INITIAL_MEM; i++) {
+            for (int i = pc + 2; i < INITIAL_MEM; i++) {
                 for (int j = 0; j < 8; j++) {
                     String byte_string = nothing.substring(j, j + 8);
-                    // Convert 8-bit binary string to byte
                     int byte_value = Integer.parseInt(byte_string, 2);
                     writer.write(byte_value);
+                }
+            }
+            for (int i = 0; i < 200; i++) {
+                if (labelTable.containsValue(i)) {
+                    var key = getKeyByValue(labelTable, i);
+                    if (key.matches("\\d+")) {
+                        String binString = String.format("%32s",
+                                Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
+                        for (int j = 0; i < binString.length(); i += 8) {
+                            String byte_string = binString.substring(i, i + 8);
+                            int byte_value = Integer.parseInt(byte_string, 2);
+                            writer.write(byte_value);
+                        }
+                    } else {
+                        String binString = String.format("%32s",
+                                Integer.toBinaryString(i)).replace(' ', '0');
+                        for (int j = 0; j < binString.length(); j += 8) {
+                            String byte_string = binString.substring(j, j + 8);
+                            int byte_value = Integer.parseInt(byte_string, 2);
+                            writer.write(byte_value);
+                        }
+                    }
+                } else {
+                    for (int j = 0; j < 8; j++) {
+                        String byte_string = nothing.substring(j, j + 8);
+                        int byte_value = Integer.parseInt(byte_string, 2);
+                        writer.write(byte_value);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -100,26 +142,47 @@ public class CodeGenerator {
 
     }
 
+    public static <T, E> T getKeyByValue(Map<T, E> map, int value) {
+        for (Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
     public static void buildLabels(List<List<Object>> atoms) {
         for (var atom : atoms) {
             if (atom.get(1).equals("LBL")) {
                 labelTable.put(atom.get(6).toString(), pc);
             } else if (atom.get(1).equals("MOV")) {
-                labelTable.put(atom.get(2).toString(), mem);
-                mem += 8;
-                labelTable.put(atom.get(4).toString(), mem);
-                mem += 8;
+                if (!labelTable.containsKey(atom.get(2).toString())) {
+                    labelTable.put(atom.get(2).toString(), mem += 8);
+                }
+                if (!labelTable.containsKey(atom.get(4).toString())) {
+                    labelTable.put(atom.get(4).toString(), mem += 8);
+                }
                 pc += 2;
             } else if (atom.get(1).equals("JMP")) {
                 pc += 2;
             } else if (atom.get(1).equals("TST")) {
-                labelTable.put(atom.get(2).toString(), mem += 8);
-                labelTable.put(atom.get(3).toString(), mem += 8);
+                if (!labelTable.containsKey(atom.get(2).toString())) {
+                    labelTable.put(atom.get(2).toString(), mem += 8);
+                }
+                if (!labelTable.containsKey(atom.get(3).toString())) {
+                    labelTable.put(atom.get(3).toString(), mem += 8);
+                }
                 pc += 3;
             } else {
-                labelTable.put(atom.get(2).toString(), mem += 8);
-                labelTable.put(atom.get(3).toString(), mem += 8);
-                labelTable.put(atom.get(4).toString(), mem += 8);
+                if (!labelTable.containsKey(atom.get(2).toString())) {
+                    labelTable.put(atom.get(2).toString(), mem += 8);
+                }
+                if (!labelTable.containsKey(atom.get(3).toString())) {
+                    labelTable.put(atom.get(3).toString(), mem += 8);
+                }
+                if (!labelTable.containsKey(atom.get(4).toString())) {
+                    labelTable.put(atom.get(4).toString(), mem += 8);
+                }
                 pc += 3;
             }
         }
