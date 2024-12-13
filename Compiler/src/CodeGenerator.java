@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.lang.Math;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -13,7 +14,8 @@ import java.io.IOException;
 public class CodeGenerator {
     static HashMap<String, Integer> labelTable = new HashMap<>();
     static int pc = 0;
-    static int mem = 20;
+    static int INITIAL_MEM = 50;
+    static int mem = INITIAL_MEM;
     static int reg = 1;
     static ArrayList<String> code = new ArrayList<>();
     static boolean firstPass = true;
@@ -58,11 +60,20 @@ public class CodeGenerator {
                 writer.write(item.substring(8,16)+"/");
                 writer.write(item.substring(16,24)+"/");
                 writer.write(item.substring(24,32)+"/");
+                writer.write("\n");
+            }
+            for (int i = pc; i < INITIAL_MEM; i++) {
+                writer.write("00000000000000000000000000000000\n");
+            }
+            for (Map.Entry<String, Integer> label : labelTable.entrySet()) {
+                if (label.getKey().startsWith("START") || label.getKey().startsWith("END") || label.getKey().startsWith("END")) {
+                    
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         try (FileOutputStream writer = new FileOutputStream("bitOutput.bin")) {
             for (var item : code){
                 for (int i = 0; i < item.length(); i += 8) {
@@ -71,6 +82,15 @@ public class CodeGenerator {
                     // Convert 8-bit binary string to byte
                     int byte_value = Integer.parseInt(byte_string, 2);
                     // Write the byte
+                    writer.write(byte_value);
+                }
+            }
+            String nothing = "00000000000000000000000000000000";
+            for (int i = pc; i < INITIAL_MEM; i++) {
+                for (int j = 0; j < 8; j++) {
+                    String byte_string = nothing.substring(j, j + 8);
+                    // Convert 8-bit binary string to byte
+                    int byte_value = Integer.parseInt(byte_string, 2);
                     writer.write(byte_value);
                 }
             }
@@ -87,7 +107,7 @@ public class CodeGenerator {
             } else if (atom.get(1).equals("MOV")) {
                 labelTable.put(atom.get(2).toString(), mem);
                 mem += 8;
-                labelTable.put(atom.get(5).toString(), mem);
+                labelTable.put(atom.get(4).toString(), mem);
                 mem += 8;
                 pc += 2;
             } else if (atom.get(1).equals("JMP")) {
