@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class ProjectOne {
-        public static ArrayList<String> partOne() {
+        public static ArrayList<String> partOne(String input_file) {
                 ArrayList<String> query = new ArrayList<>();
                 var l = new HashMap<Character, Integer>();
                 char[] alpha = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
@@ -269,7 +269,8 @@ public class ProjectOne {
                 int accept[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
                                 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1,
                                 1, 1, 1, 1, 1 };
-                String inputString = readFile(Path.of("Compiler/code/example1.txt"));
+                Path file = Paths.get(input_file);
+                String inputString = readFile(file);
                 int state = 0;
                 char current;
                 int nextState = 0;
@@ -444,7 +445,8 @@ public class ProjectOne {
         }
 
         public static void main(String[] args) {
-                partOne();
+                String input_file = args[0];
+                partOne(input_file);
         }
 
         public static String readFile(Path path) {

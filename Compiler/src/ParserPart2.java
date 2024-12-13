@@ -1,3 +1,8 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -20,13 +25,19 @@ public class ParserPart2 {
     private static String expectedToken;
 
     public static void main(String args[]) {
-        parser();
+        String input_file = args[0];
+        String output_file = args[1];
+        parser(input_file, output_file);
 
     }
 
-    public static List<List<Object>> parser() {
+    public static List<List<Object>> parser(String input_file, String output_file) {
         ArrayList<String> query = new ArrayList<>();
-        query = ProjectOne.partOne();
+        query = ProjectOne.partOne(input_file);
+        Path file = Paths.get(output_file);
+        List<String>lines = new ArrayList<String>();
+        String line = "";
+
         for (int i = 0; i < query.size(); i++) {
             Matcher textMatcher = textToken.matcher(query.get(i));
             if (!textMatcher.matches()) {
@@ -52,6 +63,22 @@ public class ParserPart2 {
         } catch (IllegalStateException e) {
             System.out.println("expected: " + expectedToken + " but got: " + currentToken);
             return null;
+        }
+        for (int i = 0; i < atoms.size(); i++) {
+            line += (atoms.get(i).get(0));
+            for (int j = 1; j < atoms.get(i).size() - 2; j++) {
+                line += (atoms.get(i).get(j) + ", ");
+            }
+            line += (atoms.get(i).get(atoms.get(i).size() - 2));
+            line += (atoms.get(i).get(atoms.get(i).size() - 1));
+            lines.add(line);
+            line = "";
+        }
+        try {
+            Files.write(file, lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return atoms;
     }
