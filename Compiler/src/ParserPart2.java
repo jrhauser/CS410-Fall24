@@ -24,7 +24,7 @@ public class ParserPart2 {
 
     }
 
-    public static List<List<Object>> parser(){
+    public static List<List<Object>> parser() {
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne();
         for (int i = 0; i < query.size(); i++) {
@@ -52,17 +52,6 @@ public class ParserPart2 {
         } catch (IllegalStateException e) {
             System.out.println("expected: " + expectedToken + " but got: " + currentToken);
             return null;
-        }
-
-        System.out.println("valid input");
-        for (int i = 0; i < atoms.size(); i++) {
-            System.out.print(atoms.get(i).get(0));
-            for (int j = 1; j < atoms.get(i).size() - 2; j++) {
-                System.out.print(atoms.get(i).get(j) + ", ");
-            }
-            System.out.print(atoms.get(i).get(atoms.get(i).size() - 2));
-            System.out.print(atoms.get(i).get(atoms.get(i).size() - 1));
-            System.out.println("");
         }
         return atoms;
     }

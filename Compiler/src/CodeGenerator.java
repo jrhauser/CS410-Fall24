@@ -51,8 +51,6 @@ public class CodeGenerator {
             }
         }
         halt();
-        System.out.println(code);
-        System.out.println(labelTable);
         try (FileWriter writer = new FileWriter("bitOutput.txt")) {
             for (var item : code) {
                 writer.write(item.substring(0, 8) + "/");
