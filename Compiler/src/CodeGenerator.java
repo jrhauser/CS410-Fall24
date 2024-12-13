@@ -102,7 +102,7 @@ public class CodeGenerator {
             }
             String nothing = "00000000000000000000000000000000";
             for (int i = pc + 2; i < INITIAL_MEM; i++) {
-                for (int j = 0; j < 8; j++) {
+                for (int j = 0; j < 4; j++) {
                     String byte_string = nothing.substring(j, j + 8);
                     int byte_value = Integer.parseInt(byte_string, 2);
                     writer.write(byte_value);
@@ -114,8 +114,8 @@ public class CodeGenerator {
                     if (key.matches("\\d+")) {
                         String binString = String.format("%32s",
                                 Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
-                        for (int j = 0; i < binString.length(); i += 8) {
-                            String byte_string = binString.substring(i, i + 8);
+                        for (int j = 0; j < binString.length(); j += 8) {
+                            String byte_string = binString.substring(j, j + 8);
                             int byte_value = Integer.parseInt(byte_string, 2);
                             writer.write(byte_value);
                         }
@@ -129,7 +129,7 @@ public class CodeGenerator {
                         }
                     }
                 } else {
-                    for (int j = 0; j < 8; j++) {
+                    for (int j = 0; j < 4; j++) {
                         String byte_string = nothing.substring(j, j + 8);
                         int byte_value = Integer.parseInt(byte_string, 2);
                         writer.write(byte_value);
