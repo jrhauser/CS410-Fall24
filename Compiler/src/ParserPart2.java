@@ -30,7 +30,6 @@ public class ParserPart2 {
         String input_file = args[0];
         String output_file = args[1];
         boolean opFlag = Boolean.valueOf(args[2]);
-        System.out.println(opFlag);
         parser(input_file, output_file, opFlag);
 
     }
@@ -42,7 +41,6 @@ public class ParserPart2 {
         Path file = Paths.get(output_file);
         List<String>lines = new ArrayList<String>();
         String line = "";
-        System.out.println(opFlag);
         for (int i = 0; i < query.size(); i++) {
             Matcher textMatcher = textToken.matcher(query.get(i));
             if (!textMatcher.matches()) {
@@ -384,7 +382,6 @@ public class ParserPart2 {
     }
 
     static Object Expression() {
-        System.out.println(opFlagClass);
         Object temp = "temp";
         if (currentToken.startsWith("Integer Literal: ") && peekNextToken().equals(";")) {
             Object token = currentToken.substring(17);
@@ -413,17 +410,17 @@ public class ParserPart2 {
                 operand2 = Term();
             }
             Matcher numberMatcher = isNumber.matcher(operand2.toString());
-            System.out.println(opFlagClass);
-            System.out.println(instruction);
-            System.out.println(operand2.toString());
-            System.out.println(instruction.equals("MUL"));
-            System.out.println(numberMatcher.matches());
             if(opFlagClass&&instruction.equals("MUL")&&numberMatcher.matches()){
                 int loopCounter = Integer.valueOf(operand2.toString());
                 instruction = "ADD";
-                System.out.println(loopCounter);
                 for(int i = 0; i < loopCounter-1; i++){
-                    atom(instruction, operand1, operand1, temp);
+                    if(i==0){
+                        atom(instruction, operand1, operand1, temp);
+                    }
+                    else {
+                        atom(instruction, temp, operand1, temp);
+                    }
+                    
                 }
             }
             else {
@@ -446,18 +443,18 @@ public class ParserPart2 {
                     operand2 = Term();
                 }
             Matcher numberMatcher2 = isNumber.matcher(operand2.toString());
-            System.out.println(opFlagClass);
-            System.out.println(instruction);
-            System.out.println(operand2.toString());
-            System.out.println(instruction.equals("MUL"));
-            System.out.println(numberMatcher2.matches());
+           
                 
                 if(opFlagClass&&instruction.equals("MUL")&&numberMatcher2.matches()){
                     int loopCounter = Integer.valueOf(operand2.toString());
                     instruction = "ADD";
-                    System.out.println(loopCounter);
                     for(int i = 0; i < loopCounter-1; i++){
-                        atom(instruction, operand1, operand1, temp);
+                        if(i==0){
+                            atom(instruction, operand1, operand1, temp);
+                        }
+                        else {
+                            atom(instruction, temp, operand1, temp);
+                        }
                     }
                 }
                 else {
