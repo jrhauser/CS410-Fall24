@@ -23,7 +23,8 @@ public class CodeGenerator {
     public static void main(String args[]) {
         String input_file = args[0];
         String output_file = args[1];
-        atoms = ParserPart2.parser(input_file, output_file);
+        boolean opFlagGlobal = Boolean.valueOf(args[2]);
+        atoms = ParserPart2.parser(input_file, output_file, opFlagGlobal);
         codeGen(atoms, input_file, output_file);
     }
 
