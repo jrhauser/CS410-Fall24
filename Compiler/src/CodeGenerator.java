@@ -53,46 +53,47 @@ public class CodeGenerator {
             }
         }
         halt();
-        try (FileWriter writer = new FileWriter(output_file)) {
-            for (var item : code) {
-                writer.write(item.substring(0, 8) + "/");
-                writer.write(item.substring(8, 16) + "/");
-                writer.write(item.substring(16, 24) + "/");
-                writer.write(item.substring(24, 32) + "/");
-                writer.write("\n");
-            }
-            for (int i = pc + 2; i < INITIAL_MEM; i++) {
-                writer.write("00000000/00000000/00000000/00000000/\n");
-            }
-            for (int i = 0; i < 200; i++) {
-                if (labelTable.containsValue(i)) {
-                    var key = getKeyByValue(labelTable, i);
-                    if (key.matches("\\d+")) {
-                        String binString = String.format("%32s",
-                                Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
-                        writer.write(binString.substring(0, 8) + "/");
-                        writer.write(binString.substring(8, 16) + "/");
-                        writer.write(binString.substring(16, 24) + "/");
-                        writer.write(binString.substring(24, 32) + "/");
-                        writer.write("\n");
-                    } else {
-                        String binString = String.format("%32s",
-                                Integer.toBinaryString(labelTable.get(key))).replace(' ', '0');
-                        writer.write(binString.substring(0, 8) + "/");
-                        writer.write(binString.substring(8, 16) + "/");
-                        writer.write(binString.substring(16, 24) + "/");
-                        writer.write(binString.substring(24, 32) + "/");
-                        writer.write("\n");
-                    }
-                } else {
-                    writer.write("00000000/00000000/00000000/00000000/\n");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try (FileOutputStream writer = new FileOutputStream("bitOutput.bin")) {
+        /*
+         * try (FileWriter writer = new FileWriter(output_file)) {
+         * for (var item : code) {
+         * writer.write(item.substring(0, 8) + "/");
+         * writer.write(item.substring(8, 16) + "/");
+         * writer.write(item.substring(16, 24) + "/");
+         * writer.write(item.substring(24, 32) + "/");
+         * writer.write("\n");
+         * }
+         * for (int i = pc + 2; i < INITIAL_MEM; i++) {
+         * writer.write("00000000/00000000/00000000/00000000/\n");
+         * }
+         * for (int i = 0; i < 200; i++) {
+         * if (labelTable.containsValue(i)) {
+         * var key = getKeyByValue(labelTable, i);
+         * if (key.matches("\\d+")) {
+         * String binString = String.format("%32s",
+         * Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
+         * writer.write(binString.substring(0, 8) + "/");
+         * writer.write(binString.substring(8, 16) + "/");
+         * writer.write(binString.substring(16, 24) + "/");
+         * writer.write(binString.substring(24, 32) + "/");
+         * writer.write("\n");
+         * } else {
+         * String binString = String.format("%32s",
+         * Integer.toBinaryString(labelTable.get(key))).replace(' ', '0');
+         * writer.write(binString.substring(0, 8) + "/");
+         * writer.write(binString.substring(8, 16) + "/");
+         * writer.write(binString.substring(16, 24) + "/");
+         * writer.write(binString.substring(24, 32) + "/");
+         * writer.write("\n");
+         * }
+         * } else {
+         * writer.write("00000000/00000000/00000000/00000000/\n");
+         * }
+         * }
+         * } catch (IOException e) {
+         * e.printStackTrace();
+         * }
+         */
+        try (FileOutputStream writer = new FileOutputStream(output_file)) {
             for (var item : code) {
                 for (int i = 0; i < item.length(); i += 8) {
                     String byte_string = item.substring(i, i + 8);

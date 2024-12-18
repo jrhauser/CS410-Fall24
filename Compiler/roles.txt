@@ -1,8 +1,0 @@
-ADD - 
-SUB - 
-MUL - 
-DIV - 
-MOV - 
-JMP - Jaun
-LBL - 
-TST - Joe
