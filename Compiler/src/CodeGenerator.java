@@ -46,10 +46,19 @@ public class CodeGenerator {
                 newAtom.add("(");
                 newAtom.add(lineList.get(i).substring(1,4));
                 String[] line = lineList.get(i).split(",");
-                for(int j = 1; j < line.length-1; j++){
-                    newAtom.add(line[j].trim());
+                for(int k = 0; k < line.length; k++){
+                    //System.out.println(line[k].hashCode() + " " + line[k].length());
                 }
-                newAtom.add(line[line.length-1].substring(0,line[line.length-1].length()-1));
+                for(int j = 1; j < line.length-1; j++){
+                    if(line[j].hashCode()==1024){
+                    //System.out.println("added a space");
+                    newAtom.add(" ");
+                    }
+                    else{
+                    newAtom.add(line[j].trim());
+                    }
+                }
+                newAtom.add(line[line.length-1].substring(0,line[line.length-1].length()-1).trim());
                 newAtom.add(")");
                 //System.out.println(newAtom);
                 newAtoms.add(List.copyOf(newAtom));
@@ -70,7 +79,7 @@ public class CodeGenerator {
         //System.out.println(atoms.size());
         buildLabels(atoms);
         for (var atom : atoms) {
-            System.out.println(atom);
+            //System.out.println(atom);
             if (atom.get(1).equals("TST")) {
                 tstAtom(atom);
             } else if (atom.get(1).equals("ADD")) {
