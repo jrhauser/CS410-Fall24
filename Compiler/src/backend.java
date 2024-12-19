@@ -22,7 +22,7 @@ public class backend {
             List<List<Object>> newAtoms = new ArrayList<List<Object>>();
             List<Object> newAtom = new ArrayList<Object>();
             for(int i = 0; i < lineList.size(); i++){
-                System.out.println(lineList.get(i));
+                //System.out.println(lineList.get(i));
                 newAtom.add("(");
                 newAtom.add(lineList.get(i).substring(1,4));
                 String[] line = lineList.get(i).split(",");
@@ -31,12 +31,13 @@ public class backend {
                 }
                 newAtom.add(line[line.length-1].substring(0,line[line.length-1].length()-1));
                 newAtom.add(")");
-                System.out.println(newAtom);
+                //System.out.println(newAtom);
                 newAtoms.add(List.copyOf(newAtom));
                 newAtom.clear();
             }
-            System.out.println(newAtoms.toString());
+           // System.out.println(newAtoms.toString());
          atoms.addAll(newAtoms);
+         
             CodeGenerator.codeGen(atoms,input_file, output_file, opLocal);
         }
         catch (IOException e) {
