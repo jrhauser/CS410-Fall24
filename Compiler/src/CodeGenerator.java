@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -6,9 +7,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class CodeGenerator {
     static HashMap<String, Integer> labelTable = new HashMap<>();
@@ -19,17 +25,52 @@ public class CodeGenerator {
     static ArrayList<String> code = new ArrayList<>();
     static boolean firstPass = true;
     private static List<List<Object>> atoms = new ArrayList<List<Object>>();
+   
+    private static boolean opFlagLocalClass;
 
     public static void main(String args[]) {
         String input_file = args[0];
         String output_file = args[1];
-        atoms = ParserPart2.parser(input_file, output_file);
-        codeGen(atoms, input_file, output_file);
-    }
+        boolean opFlagLocal = Boolean.valueOf(args[2]);
 
-    public static void codeGen(List<List<Object>> atoms, String input_file, String output_file) {
+        
+        try{
+            Path file = Paths.get(input_file);
+            Stream<String> lineStream;
+            lineStream = Files.lines(file, Charset.defaultCharset());
+            List<String> lineList = lineStream.toList();
+            List<List<Object>> newAtoms = new ArrayList<List<Object>>();
+            List<Object> newAtom = new ArrayList<Object>();
+            for(int i = 0; i < lineList.size(); i++){
+                //System.out.println(lineList.get(i));
+                newAtom.add("(");
+                newAtom.add(lineList.get(i).substring(1,4));
+                String[] line = lineList.get(i).split(",");
+                for(int j = 1; j < line.length-1; j++){
+                    newAtom.add(line[j].trim());
+                }
+                newAtom.add(line[line.length-1].substring(0,line[line.length-1].length()-1));
+                newAtom.add(")");
+                //System.out.println(newAtom);
+                newAtoms.add(List.copyOf(newAtom));
+                newAtom.clear();
+            }
+           // System.out.println(newAtoms.toString());
+         atoms.addAll(newAtoms);
+         
+            codeGen(atoms,input_file, output_file, opFlagLocal);
+        }
+        catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+    public static void codeGen(List<List<Object>> atoms, String input_file, String output_file, boolean opFlagLocal) {
+        opFlagLocalClass = opFlagLocal;
+        //System.out.println(atoms.size());
         buildLabels(atoms);
         for (var atom : atoms) {
+            System.out.println(atom);
             if (atom.get(1).equals("TST")) {
                 tstAtom(atom);
             } else if (atom.get(1).equals("ADD")) {
@@ -140,6 +181,7 @@ public class CodeGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    
 
     }
 
@@ -153,6 +195,8 @@ public class CodeGenerator {
     }
 
     public static void buildLabels(List<List<Object>> atoms) {
+        //System.out.println(atoms.size());
+        //System.out.println(atoms.get(0).get(0).toString());
         for (var atom : atoms) {
             if (atom.get(1).equals("LBL")) {
                 labelTable.put(atom.get(6).toString(), pc);
@@ -187,6 +231,7 @@ public class CodeGenerator {
                 pc += 3;
             }
         }
+        
     }
 
     private static void tstAtom(List<Object> atom) {
@@ -303,5 +348,7 @@ public class CodeGenerator {
         bitList += (0 << 20); // maybe not needed
         code.add(Integer.toBinaryString(bitList));
     }
+
+    
 
 }

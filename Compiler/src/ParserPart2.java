@@ -14,6 +14,7 @@ public class ParserPart2 {
     // token list declaration
     private static boolean first = true;
     private static boolean loop = false;
+    private static boolean opFlagClass;
     private static ArrayList<String> tokens = new ArrayList<>();
     private static String currentToken;
     private static int labelNumber = 0;
@@ -22,22 +23,24 @@ public class ParserPart2 {
     private static ArrayList<String> queryTokens = new ArrayList<>();
     private static final Pattern textToken = Pattern.compile("Accepted: Class: (\\w+|[+\\-/%*{};=<>!().]+)( [^ V\\n" + //
             "]+)?(?: Value: (\\w+.* *\\w*))*");
+    private static final Pattern isNumber = Pattern.compile("[0-9]+");
     private static String expectedToken;
 
     public static void main(String args[]) {
         String input_file = args[0];
         String output_file = args[1];
-        parser(input_file, output_file);
+        boolean opFlag = Boolean.valueOf(args[2]);
+        parser(input_file, output_file, opFlag);
 
     }
 
-    public static List<List<Object>> parser(String input_file, String output_file) {
+    public static List<List<Object>> parser(String input_file, String output_file, boolean opFlag) {
+        opFlagClass = opFlag;
         ArrayList<String> query = new ArrayList<>();
         query = ProjectOne.partOne(input_file);
         Path file = Paths.get(output_file);
         List<String>lines = new ArrayList<String>();
         String line = "";
-
         for (int i = 0; i < query.size(); i++) {
             Matcher textMatcher = textToken.matcher(query.get(i));
             if (!textMatcher.matches()) {
@@ -393,6 +396,8 @@ public class ParserPart2 {
             Object operand1 = Term();
             String instruction = Operator();
             Object operand2;
+            
+            
             if (instruction.equals("++")) {
                 instruction = "ADD";
                 operand2 = 1;
@@ -404,7 +409,24 @@ public class ParserPart2 {
             } else {
                 operand2 = Term();
             }
-            atom(instruction, operand1, operand2, temp);
+            Matcher numberMatcher = isNumber.matcher(operand2.toString());
+            if(opFlagClass&&instruction.equals("MUL")&&numberMatcher.matches()){
+                int loopCounter = Integer.valueOf(operand2.toString());
+                instruction = "ADD";
+                for(int i = 0; i < loopCounter-1; i++){
+                    if(i==0){
+                        atom(instruction, operand1, operand1, temp);
+                    }
+                    else {
+                        atom(instruction, temp, operand1, temp);
+                    }
+                    
+                }
+            }
+            else {
+                atom(instruction, operand1, operand2, temp);
+            }
+            
             while (currentToken.equals("+") || currentToken.equals("-") || currentToken.equals("*")
                     || currentToken.equals("/")) {
                 operand1 = temp;
@@ -420,7 +442,24 @@ public class ParserPart2 {
                 } else {
                     operand2 = Term();
                 }
-                atom(instruction, operand1, operand2, temp);
+            Matcher numberMatcher2 = isNumber.matcher(operand2.toString());
+           
+                
+                if(opFlagClass&&instruction.equals("MUL")&&numberMatcher2.matches()){
+                    int loopCounter = Integer.valueOf(operand2.toString());
+                    instruction = "ADD";
+                    for(int i = 0; i < loopCounter-1; i++){
+                        if(i==0){
+                            atom(instruction, operand1, operand1, temp);
+                        }
+                        else {
+                            atom(instruction, temp, operand1, temp);
+                        }
+                    }
+                }
+                else {
+                    atom(instruction, operand1, operand2, temp);
+                }
             }
             return "temp";
         }
