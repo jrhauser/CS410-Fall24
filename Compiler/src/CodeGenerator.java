@@ -67,7 +67,7 @@ public class CodeGenerator {
            // System.out.println(newAtoms.toString());
          atoms.addAll(newAtoms);
          
-            codeGen(atoms,input_file, output_file, opFlagLocal);
+        codeGen(atoms,input_file, output_file, opFlagLocal);
         }
         catch (IOException e) {
         e.printStackTrace();
@@ -255,6 +255,17 @@ public class CodeGenerator {
     }
 
     public static void addAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("0")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Add 0 operand 2");
+        }
+        else if(opFlagLocalClass&&atom.get(2).toString().strip().equals("0")){
+            loadWord(atom.get(3).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Add 0 operand 1");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 1; // ADD
@@ -263,9 +274,21 @@ public class CodeGenerator {
         bitList += (reg);
         code.add("000" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void subAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("0")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Sub 0 operand 2");
+        }
+        else if(opFlagLocalClass&&atom.get(2).toString().strip().equals("0")){
+            loadWord(atom.get(3).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Sub 0 operand 1");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 2; // SUB
@@ -275,9 +298,21 @@ public class CodeGenerator {
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("00" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void mulAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("1")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Mul 1 operand 2");
+        }
+        else if(opFlagLocalClass&&atom.get(2).toString().strip().equals("1")){
+            loadWord(atom.get(3).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Mul 1 operand 1");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 3; // MUL
@@ -287,9 +322,16 @@ public class CodeGenerator {
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("00" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void divAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("1")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Div 1 operand 2");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 4; // DIV
@@ -299,6 +341,7 @@ public class CodeGenerator {
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("0" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void jmpAtom(List<Object> atom) {
