@@ -46,10 +46,19 @@ public class CodeGenerator {
                 newAtom.add("(");
                 newAtom.add(lineList.get(i).substring(1,4));
                 String[] line = lineList.get(i).split(",");
-                for(int j = 1; j < line.length-1; j++){
-                    newAtom.add(line[j].trim());
+                for(int k = 0; k < line.length; k++){
+                    //System.out.println(line[k].hashCode() + " " + line[k].length());
                 }
-                newAtom.add(line[line.length-1].substring(0,line[line.length-1].length()-1));
+                for(int j = 1; j < line.length-1; j++){
+                    if(line[j].hashCode()==1024){
+                    //System.out.println("added a space");
+                    newAtom.add(" ");
+                    }
+                    else{
+                    newAtom.add(line[j].trim());
+                    }
+                }
+                newAtom.add(line[line.length-1].substring(0,line[line.length-1].length()-1).trim());
                 newAtom.add(")");
                 //System.out.println(newAtom);
                 newAtoms.add(List.copyOf(newAtom));
@@ -58,7 +67,7 @@ public class CodeGenerator {
            // System.out.println(newAtoms.toString());
          atoms.addAll(newAtoms);
          
-            codeGen(atoms,input_file, output_file, opFlagLocal);
+        codeGen(atoms,input_file, output_file, opFlagLocal);
         }
         catch (IOException e) {
         e.printStackTrace();
@@ -70,7 +79,7 @@ public class CodeGenerator {
         //System.out.println(atoms.size());
         buildLabels(atoms);
         for (var atom : atoms) {
-            System.out.println(atom);
+            //System.out.println(atom);
             if (atom.get(1).equals("TST")) {
                 tstAtom(atom);
             } else if (atom.get(1).equals("ADD")) {
@@ -247,6 +256,17 @@ public class CodeGenerator {
     }
 
     public static void addAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("0")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Add 0 operand 2");
+        }
+        else if(opFlagLocalClass&&atom.get(2).toString().strip().equals("0")){
+            loadWord(atom.get(3).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Add 0 operand 1");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 1; // ADD
@@ -255,9 +275,21 @@ public class CodeGenerator {
         bitList += (reg);
         code.add("000" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void subAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("0")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Sub 0 operand 2");
+        }
+        else if(opFlagLocalClass&&atom.get(2).toString().strip().equals("0")){
+            loadWord(atom.get(3).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Sub 0 operand 1");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 2; // SUB
@@ -267,9 +299,21 @@ public class CodeGenerator {
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("00" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void mulAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("1")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Mul 1 operand 2");
+        }
+        else if(opFlagLocalClass&&atom.get(2).toString().strip().equals("1")){
+            loadWord(atom.get(3).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Mul 1 operand 1");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 3; // MUL
@@ -279,9 +323,16 @@ public class CodeGenerator {
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("00" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void divAtom(List<Object> atom) {
+        if(opFlagLocalClass&&atom.get(3).toString().strip().equals("1")){
+            loadWord(atom.get(2).toString());
+            storeWord(atom.get(4).toString());
+            System.out.println("Div 1 operand 2");
+        }
+        else{
         loadWord(atom.get(2).toString()); // lw first number // lw second number
         Integer bitList = 0;
         int opCode = 4; // DIV
@@ -291,6 +342,7 @@ public class CodeGenerator {
         bitList += (labelTable.get(atom.get(3).toString()) << 20);
         code.add("0" + Integer.toBinaryString(bitList));
         storeWord(atom.get(4).toString());
+        }
     }
 
     public static void jmpAtom(List<Object> atom) {
