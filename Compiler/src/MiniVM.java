@@ -31,7 +31,7 @@ public class MiniVM {
 				? Paths.get(args[0])
 				: Paths.get("input.src");
 
-		new MiniVM(input).execute(true, true);
+		new MiniVM(input).execute(true, false);
 	}
 
 	public MiniVM(Path input) throws IOException {

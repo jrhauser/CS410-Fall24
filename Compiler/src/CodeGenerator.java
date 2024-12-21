@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 public class CodeGenerator {
     static HashMap<String, Integer> labelTable = new HashMap<>();
     static int pc = 0;
-    static int INITIAL_MEM = 50;
+    static int INITIAL_MEM = 64;
     static int mem = INITIAL_MEM;
     static int reg = 3;
     static ArrayList<String> code = new ArrayList<>();
@@ -98,6 +98,7 @@ public class CodeGenerator {
                 movAtom(atom);
 
             }
+            pc += 1;
         }
         halt();
         try (FileWriter writer = new FileWriter("bitOutput.txt")) {
@@ -114,7 +115,7 @@ public class CodeGenerator {
             for (int i = 0; i < 200; i++) {
                 if (labelTable.containsValue(i)) {
                     var key = getKeyByValue(labelTable, i);
-                    System.out.println(key + " : " + labelTable.get(key));
+
                     if (key.matches("\\d+")) {
                         String binString = String.format("%32s",
                                 Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
@@ -140,8 +141,8 @@ public class CodeGenerator {
             e.printStackTrace();
         }
         try (FileOutputStream writer = new FileOutputStream(output_file)) {
-            String nothing = "00000000000000000000000000000000";
-            for (int i = 0; i < 4; i++) {
+            String nothing = "00000000";
+            for (int j = 0; j < 4; j++) {
                 String start = nothing;
                 int start_value = Integer.parseInt(start, 2);
                 writer.write(start_value);
@@ -153,9 +154,17 @@ public class CodeGenerator {
                     writer.write(byte_value);
                 }
             }
-            for (int i = pc; i < 200; i++) {
+            for (int i = pc + 1; i < INITIAL_MEM - 1; i++) {
+                for (int j = 0; j < 4; j++) {
+                    String start = nothing;
+                    int start_value = Integer.parseInt(start, 2);
+                    writer.write(start_value);
+                }
+            }
+            for (int i = 0; i < 200; i++) {
                 if (labelTable.containsValue(i)) {
                     var key = getKeyByValue(labelTable, i);
+                    System.out.println(key + " : " + labelTable.get(key));
                     if (key.matches("\\d+")) {
                         String binString = String.format("%32s",
                                 Integer.toBinaryString(Integer.parseInt(key))).replace(' ', '0');
@@ -174,9 +183,11 @@ public class CodeGenerator {
                         }
                     }
                 } else {
-                    String byte_string = nothing;
-                    int byte_value = Integer.parseInt(byte_string, 2);
-                    writer.write(byte_value);
+                    for (int j = 0; j < 4; j++) {
+                        String start = nothing;
+                        int start_value = Integer.parseInt(start, 2);
+                        writer.write(start_value);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -228,10 +239,8 @@ public class CodeGenerator {
                 if (!labelTable.containsKey(atom.get(4).toString())) {
                     labelTable.put(atom.get(4).toString(), mem += 8);
                 }
-                pc += 3;
             }
         }
-
     }
 
     private static void tstAtom(List<Object> atom) {
@@ -240,8 +249,8 @@ public class CodeGenerator {
         int opCode = 6; // CMP
         bitList += (opCode << 28); // opcode = 0110
         bitList += (Integer.parseInt(atom.get(5).toString()) << 24); // cmp = comparison number
-        bitList += (reg);
-        bitList += (labelTable.get(atom.get(3)) << 20);
+        bitList += (reg << 20);
+        bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
         code.add("0" + Integer.toBinaryString(bitList));
         jmp(atom.get(6).toString());
     }
@@ -260,8 +269,8 @@ public class CodeGenerator {
             Integer bitList = 0;
             int opCode = 1; // ADD
             bitList += (opCode << 28); // opcode = 0001
-            bitList += (labelTable.get(atom.get(3).toString()) << 20);
-            bitList += (reg);
+            bitList += (reg << 20);
+            bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
             code.add("000" + Integer.toBinaryString(bitList));
             storeWord(atom.get(4).toString());
         }
@@ -282,8 +291,8 @@ public class CodeGenerator {
             int opCode = 2; // SUB
             bitList += (opCode << 28); // opcode = 0010
             bitList += (0 << 24); // cmp = 0
-            bitList += (reg);
-            bitList += (labelTable.get(atom.get(3).toString()) << 20);
+            bitList += (reg << 20);
+            bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
             code.add("00" + Integer.toBinaryString(bitList));
             storeWord(atom.get(4).toString());
         }
@@ -304,8 +313,8 @@ public class CodeGenerator {
             int opCode = 3; // MUL
             bitList += (opCode << 28); // opcode = 0011
             bitList += (0 << 24); // cmp = 0
-            bitList += (reg);
-            bitList += (labelTable.get(atom.get(3).toString()) << 20);
+            bitList += (reg << 20);
+            bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
             code.add("00" + Integer.toBinaryString(bitList));
             storeWord(atom.get(4).toString());
         }
@@ -322,8 +331,8 @@ public class CodeGenerator {
             int opCode = 4; // DIV
             bitList += (opCode << 28); // opcode = 0100
             bitList += (0 << 24); // cmp = 0
-            bitList += (reg);
-            bitList += (labelTable.get(atom.get(3).toString()) << 20);
+            bitList += (reg << 20);
+            bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
             code.add("0" + Integer.toBinaryString(bitList));
             storeWord(atom.get(4).toString());
         }
@@ -334,8 +343,8 @@ public class CodeGenerator {
         int opCode = 6; // CMP
         bitList += (opCode << 28); // opcode = 0110
         bitList += (0 << 24); // cmp = comparison number
-        bitList += (reg);
-        bitList += (0 << 20);
+        bitList += (reg << 20);
+        bitList += (labelTable.get(atom.get(6).toString()) + INITIAL_MEM);
         code.add("0" + Integer.toBinaryString(bitList));
         jmp(atom.get(6).toString());
     }
@@ -351,7 +360,7 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 0111
         bitList += (0 << 24); // cmp = 0000
         bitList += (reg << 20);
-        bitList += (labelTable.get(identifier)); // r1 = (ADD, ___ , , )
+        bitList += (labelTable.get(identifier) + INITIAL_MEM); // r1 = (ADD, ___ , , )
         // memory register
         code.add("0" + Integer.toBinaryString(bitList));
     }
@@ -362,9 +371,8 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 1000
         bitList += (0 << 24); // cmp = 0000
         bitList += (reg << 20);
-        bitList += (labelTable.get(identifier)); // memory
+        bitList += (labelTable.get(identifier) + INITIAL_MEM); // memory
         code.add(Integer.toBinaryString(bitList));
-        System.out.println(Integer.toBinaryString(bitList));
     }
 
     private static void jmp(String label) {
@@ -372,7 +380,8 @@ public class CodeGenerator {
         int opCode = 5; // JMP
         bitList += (opCode << 28); // opcode = 0101
         bitList += (0 << 24); // cmp = 0000
-        bitList += (labelTable.get(label) << 20); // memory
+        bitList += (1 << 20);
+        bitList += (labelTable.get(label) + INITIAL_MEM); // memory
         code.add("0" + Integer.toBinaryString(bitList));
     }
 
@@ -380,9 +389,6 @@ public class CodeGenerator {
         Integer bitList = 0;
         int opCode = 9; // HLT
         bitList += (opCode << 28);
-        bitList += (0 << 24); // cmp = 0000
-        bitList += (0 << 4); // maybe no needed
-        bitList += (0 << 20); // maybe not needed
         code.add(Integer.toBinaryString(bitList));
     }
 
