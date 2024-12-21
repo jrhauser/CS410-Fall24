@@ -88,8 +88,8 @@ public class MiniVM {
 					System.out.println();
 
 					dumpTrace(3, 7);
-					dumpRegisters();
-					dumpMemory(0, load);
+					// dumpRegisters();
+					// dumpMemory(0, load);
 				}
 
 				if (halt)

@@ -248,7 +248,7 @@ public class CodeGenerator {
         Integer bitList = 0;
         int opCode = 6; // CMP
         bitList += (opCode << 28); // opcode = 0110
-        bitList += (0 << 24); // cmp = comparison number
+        bitList += (Integer.parseInt(atom.get(5).toString()) << 24); // cmp = comparison number
         bitList += (reg << 20);
         bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
         code.add("0" + Integer.toBinaryString(bitList));
@@ -258,7 +258,7 @@ public class CodeGenerator {
     public static void addAtom(List<Object> atom) {
         if (opFlagLocalClass && atom.get(3).toString().strip().equals("0")) {
             loadWord(atom.get(2).toString());
-            storeWord(atom.get(4).toString());
+            storeWord(atom.get(5).toString());
             System.out.println("Add 0 operand 2");
         } else if (opFlagLocalClass && atom.get(2).toString().strip().equals("0")) {
             loadWord(atom.get(3).toString());

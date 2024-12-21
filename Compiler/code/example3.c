@@ -1,1 +1,1 @@
-if ( x == 10 ) { x = 11; z = v + 22; } else { int b = 0; } while (x < 22) { b = 30; }
+int x = 10; if ( x == 10 ) { x = 11; z = v + 22; } else { int b = 0; } while (x < 22) { b = 30;  x = x + 1;}
