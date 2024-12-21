@@ -98,7 +98,6 @@ public class CodeGenerator {
                 movAtom(atom);
 
             }
-            pc += 1;
         }
         halt();
         try (FileWriter writer = new FileWriter("bitOutput.txt")) {

@@ -1,4 +1,4 @@
-(MOV, 0,  , i)
+(MOV, 3,  , i)
 (LBL,  ,  ,  ,  , START0)
 (TST, i, 3,  , 5, END0)
 (MUL, x, 5, temp)
