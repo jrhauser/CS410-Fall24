@@ -238,6 +238,7 @@ public class CodeGenerator {
                 if (!labelTable.containsKey(atom.get(4).toString())) {
                     labelTable.put(atom.get(4).toString(), mem += 8);
                 }
+                pc += 3;
             }
         }
     }
@@ -247,7 +248,7 @@ public class CodeGenerator {
         Integer bitList = 0;
         int opCode = 6; // CMP
         bitList += (opCode << 28); // opcode = 0110
-        bitList += (Integer.parseInt(atom.get(5).toString()) << 24); // cmp = comparison number
+        bitList += (0 << 24); // cmp = comparison number
         bitList += (reg << 20);
         bitList += (labelTable.get(atom.get(3).toString()) + INITIAL_MEM);
         code.add("0" + Integer.toBinaryString(bitList));
@@ -343,7 +344,7 @@ public class CodeGenerator {
         bitList += (opCode << 28); // opcode = 0110
         bitList += (0 << 24); // cmp = comparison number
         bitList += (reg << 20);
-        bitList += (labelTable.get(atom.get(6).toString()) + INITIAL_MEM);
+        bitList += (labelTable.get(atom.get(6).toString()));
         code.add("0" + Integer.toBinaryString(bitList));
         jmp(atom.get(6).toString());
     }
@@ -379,8 +380,8 @@ public class CodeGenerator {
         int opCode = 5; // JMP
         bitList += (opCode << 28); // opcode = 0101
         bitList += (0 << 24); // cmp = 0000
-        bitList += (1 << 20);
-        bitList += (labelTable.get(label) + INITIAL_MEM); // memory
+        bitList += (reg << 20);
+        bitList += (labelTable.get(label)); // memory
         code.add("0" + Integer.toBinaryString(bitList));
     }
 
